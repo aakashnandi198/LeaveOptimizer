@@ -6,7 +6,7 @@
   :root {
     color-scheme: light;
   }
-
+  
   html.dark {
     color-scheme: dark;
   }
@@ -20,8 +20,7 @@
   }
 
   @media print {
-...
-
+    html {
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
@@ -36,7 +35,6 @@
       -webkit-print-color-adjust: exact;
     }
 
-    /* Force a single page if possible */
     .print-container {
       width: 100% !important;
       height: 100% !important;
