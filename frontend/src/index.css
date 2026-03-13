@@ -3,13 +3,37 @@
 @tailwind utilities;
 
 @layer base {
-  /* Force dark mode background if the class is present on html */
   html.dark body {
     @apply bg-gray-950 text-gray-100;
   }
 
   body {
     @apply bg-gray-50 text-gray-800 transition-colors duration-300;
+  }
+
+  /* Explicit dark mode overrides for components */
+  .dark .bg-white {
+    @apply bg-gray-900 border-gray-800 text-gray-100;
+  }
+
+  .dark .text-gray-900 {
+    @apply text-white;
+  }
+
+  .dark .text-gray-800 {
+    @apply text-gray-200;
+  }
+
+  .dark .text-gray-400 {
+    @apply text-gray-500;
+  }
+
+  .dark .bg-gray-50 {
+    @apply bg-gray-900/50;
+  }
+
+  .dark .border-gray-100 {
+    @apply border-gray-800;
   }
 
   @media print {
