@@ -116,11 +116,11 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
 const TodayIcon = () => {
   const date = new Date();
   return (
-    <div className="inline-flex flex-col items-center justify-center bg-white dark:bg-gray-900 border-2 border-red-500 rounded-lg overflow-hidden w-10 h-10 mr-3 shadow-sm transform -rotate-3">
+    <div className="inline-flex flex-col items-center justify-center themed-card border-2 border-red-500 rounded-lg overflow-hidden w-10 h-10 mr-3 shadow-sm transform -rotate-3">
       <div className="bg-red-500 text-white text-[8px] font-black w-full text-center py-0.5 leading-none uppercase tracking-tighter">
         {format(date, 'MMM')}
       </div>
-      <div className="text-gray-900 dark:text-white text-lg font-black leading-none py-0.5">
+      <div className="themed-text text-lg font-black leading-none py-0.5">
         {format(date, 'd')}
       </div>
     </div>
@@ -130,7 +130,7 @@ const TodayIcon = () => {
 const PowerSlider = ({ label, value, onChange, colorClass, id }) => (
   <div className="space-y-1.5">
     <div className="flex justify-between items-center">
-      <label className="text-[9px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">{label}: {value.toFixed(1)}</label>
+      <label className="text-[9px] font-black themed-text-muted uppercase tracking-widest">{label}: {value.toFixed(1)}</label>
     </div>
     <input 
       type="range" min="0" max="5" step="0.1" list={id}
@@ -140,7 +140,7 @@ const PowerSlider = ({ label, value, onChange, colorClass, id }) => (
     <datalist id={id}>
       {[0, 1, 2, 3, 4, 5].map(v => <option key={v} value={v} />)}
     </datalist>
-    <div className="flex justify-between text-[8px] font-black text-gray-300 dark:text-gray-600 px-1 tracking-widest">
+    <div className="flex justify-between text-[8px] font-black themed-text-muted opacity-30 px-1 tracking-widest">
       <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
     </div>
   </div>
@@ -157,7 +157,7 @@ const DPGridView = ({ grid, dates }) => {
   }, [grid]);
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-800 flex flex-col h-[80vh]">
+    <div className="themed-card rounded-3xl shadow-xl overflow-hidden border flex flex-col h-[80vh] transition-colors duration-300">
       <div className="p-4 bg-gray-900 dark:bg-black text-white flex justify-between items-center">
         <h3 className="text-[9px] font-black uppercase tracking-widest">Utility Heatmap (DP Grid)</h3>
         <div className="text-[8px] font-black opacity-50 uppercase tracking-tighter text-gray-400">Higher intensity = Better value for budget</div>
@@ -191,7 +191,7 @@ const DPGridView = ({ grid, dates }) => {
           <tbody>
             {dates.map((date, i) => (
               <tr key={date}>
-                <td className="p-2 border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 font-bold sticky left-0 z-10 text-[8px] whitespace-nowrap">{date}</td>
+                <td className="p-2 border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 font-bold sticky left-0 z-10 text-[8px] whitespace-nowrap themed-text">{date}</td>
                 {grid[i].map((val, b) => {
                   const intensity = val > 0 ? (val / maxVal) : 0;
                   // Using green-500 (rgb 34 197 94) as base
@@ -416,35 +416,35 @@ function App() {
         <div className="flex flex-col md:flex-row gap-6 items-start">
           
           <div className="w-full md:w-[320px] lg:w-[380px] md:sticky md:top-6 z-20 print:hidden">
-            <div className="themed-card rounded-3xl shadow-xl p-6 border space-y-8">
+            <div className="themed-card rounded-3xl shadow-xl p-6 border space-y-8 transition-colors duration-300">
               
               <div className="space-y-4">
                 <h3 className="text-[9px] font-black themed-text-muted uppercase tracking-widest border-b pb-2">1. Region & Budgets</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="col-span-2">
-                    <select value={country} onChange={(e) => {setCountry(e.target.value); setSelectedProvince('');}} className="w-full border-2 themed-card p-2.5 rounded-xl focus:border-blue-500 transition-colors outline-none text-sm font-black shadow-sm appearance-none">
+                    <select value={country} onChange={(e) => {setCountry(e.target.value); setSelectedProvince('');}} className="w-full border-2 themed-input p-2.5 rounded-xl focus:border-blue-500 transition-all outline-none text-sm font-black shadow-sm appearance-none">
                       <option value="">Select Country</option>
                       {countries.map(c => <option key={c.countryCode} value={c.countryCode}>{c.name}</option>)}
                     </select>
                   </div>
                   <div className="col-span-2">
-                    <select value={selectedProvince} onChange={(e) => setSelectedProvince(e.target.value)} className="w-full border-2 themed-card p-2.5 rounded-xl focus:border-blue-500 transition-colors outline-none text-sm font-black shadow-sm appearance-none">
+                    <select value={selectedProvince} onChange={(e) => setSelectedProvince(e.target.value)} className="w-full border-2 themed-input p-2.5 rounded-xl focus:border-blue-500 transition-all outline-none text-sm font-black shadow-sm appearance-none">
                       <option value="">All Regions</option>
                       {provinces.map(p => <option key={p} value={p}>{p}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="text-[9px] font-black themed-text-muted uppercase ml-1 block">Paid</label>
-                    <input type="number" value={leaveCount} onChange={(e) => setLeaveCount(parseInt(e.target.value))} className="w-full border-2 themed-card p-2.5 rounded-xl outline-none text-sm font-black shadow-sm" />
+                    <input type="number" value={leaveCount} onChange={(e) => setLeaveCount(parseInt(e.target.value))} className="w-full border-2 themed-input p-2.5 rounded-xl outline-none text-sm font-black shadow-sm" />
                   </div>
                   <div>
                     <label className="text-[9px] font-black themed-text-muted uppercase ml-1 block">Sick</label>
-                    <input type="number" value={sickBudget} onChange={(e) => setSickBudget(parseInt(e.target.value))} className="w-full border-2 themed-card p-2.5 rounded-xl outline-none text-sm font-black shadow-sm" />
+                    <input type="number" value={sickBudget} onChange={(e) => setSickBudget(parseInt(e.target.value))} className="w-full border-2 themed-input p-2.5 rounded-xl outline-none text-sm font-black shadow-sm" />
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800">
+              <div className="space-y-6 bg-gray-50 themed-card p-4 rounded-2xl border-2 border-dashed transition-colors duration-300">
                 <h3 className="text-[9px] font-black themed-text-muted uppercase tracking-widest">2. Tuning</h3>
                 <PowerSlider label="Length Bias" value={numPower} onChange={setNumPower} colorClass="accent-blue-600" id="num-marks" />
                 
@@ -460,11 +460,11 @@ function App() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-[9px] font-black themed-text-muted uppercase tracking-widest border-b dark:border-gray-800 pb-2">3. Controls</h3>
+                <h3 className="text-[9px] font-black themed-text-muted uppercase tracking-widest border-b pb-2">3. Controls</h3>
                 <div className="flex flex-wrap gap-2">
-                  <button onClick={() => setSelectionMode('sick')} className={`flex-1 py-2 rounded-xl text-[9px] font-black transition-all uppercase tracking-widest ${selectionMode === 'sick' ? 'bg-orange-500 text-white shadow-md' : 'themed-card text-gray-400 border border-gray-100'}`}>SICK ({manualSickDays.length})</button>
-                  <button onClick={() => setSelectionMode('paid')} className={`flex-1 py-2 rounded-xl text-[9px] font-black transition-all uppercase tracking-widest ${selectionMode === 'paid' ? 'bg-green-700 text-white shadow-lg' : 'themed-card text-gray-400 border border-gray-100'}`}>PAID ({manualPaidDays.length})</button>
-                  <button onClick={() => setSelectionMode('holiday')} className={`flex-1 py-2 rounded-xl text-[9px] font-black transition-all uppercase tracking-widest ${selectionMode === 'holiday' ? 'bg-blue-500 text-white shadow-lg' : 'themed-card text-gray-400 border border-gray-100'}`}>HOL</button>
+                  <button onClick={() => setSelectionMode('sick')} className={`flex-1 py-2 rounded-xl text-[9px] font-black transition-all uppercase tracking-widest ${selectionMode === 'sick' ? 'bg-orange-500 text-white shadow-md' : 'themed-card themed-text-muted border'}`}>SICK ({manualSickDays.length})</button>
+                  <button onClick={() => setSelectionMode('paid')} className={`flex-1 py-2 rounded-xl text-[9px] font-black transition-all uppercase tracking-widest ${selectionMode === 'paid' ? 'bg-green-700 text-white shadow-lg' : 'themed-card themed-text-muted border'}`}>PAID ({manualPaidDays.length})</button>
+                  <button onClick={() => setSelectionMode('holiday')} className={`flex-1 py-2 rounded-xl text-[9px] font-black transition-all uppercase tracking-widest ${selectionMode === 'holiday' ? 'bg-blue-500 text-white shadow-lg' : 'themed-card themed-text-muted border'}`}>HOL</button>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => {setPlannedStrategy([]); setDpGrid(null); setRemovedHolidays([]);}} className="flex-1 bg-red-500 text-white font-black py-3 rounded-xl hover:bg-red-600 transition-all text-xs uppercase shadow-md active:scale-95 tracking-widest">CLEAR</button>
@@ -472,13 +472,13 @@ function App() {
                 </div>
                 <button 
                   onClick={() => setShowDebug(!showDebug)} 
-                  className={`w-full py-2 rounded-xl text-[8px] font-black transition-all uppercase tracking-[0.2em] border-2 ${showDebug ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white' : 'bg-transparent text-gray-300 dark:text-gray-600 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:text-gray-400 dark:hover:text-gray-500'}`}
+                  className={`w-full py-2 rounded-xl text-[8px] font-black transition-all uppercase tracking-[0.2em] border-2 ${showDebug ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white' : 'bg-transparent themed-text-muted border hover:border-gray-200 transition-all'}`}
                 >
                   {showDebug ? 'VIEW CALENDAR' : 'DEBUG DP GRID'}
                 </button>
               </div>
 
-              <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center px-2">
+              <div className="pt-4 border-t flex justify-between items-center px-2">
                 <div className="text-center"><p className="text-2xl font-black text-blue-600 dark:text-blue-400">{totalDaysOff}</p><p className="text-[8px] uppercase font-black themed-text-muted tracking-widest">Days Off</p></div>
                 <div className="h-8 w-px bg-gray-100 dark:bg-gray-800"></div>
                 <div className="text-center"><p className="text-2xl font-black text-green-600 dark:text-green-400">{overallEfficiency}x</p><p className="text-[8px] uppercase font-black themed-text-muted tracking-widest">Efficiency</p></div>
@@ -495,8 +495,8 @@ function App() {
                   <div className="flex items-center"><span className="w-3 h-3 bg-green-500 rounded-sm mr-2"></span> Suggested</div>
                   <div className="flex items-center"><span className="w-3 h-3 bg-green-700 rounded-sm mr-2"></span> Manual Paid</div>
                   <div className="flex items-center"><span className="w-3 h-3 bg-orange-500 rounded-sm mr-2"></span> Manual Sick</div>
-                  <div className="flex items-center"><span className="w-3 h-3 bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 rounded-sm mr-2"></span> Removed Holiday</div>
-                  <div className="flex items-center"><span className="w-3 h-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-800 rounded-sm mr-2"></span> Weekend</div>
+                  <div className="flex items-center"><span className="w-3 h-3 themed-input border rounded-sm mr-2"></span> Removed Holiday</div>
+                  <div className="flex items-center"><span className="w-3 h-3 bg-gray-50 dark:bg-gray-900 border rounded-sm mr-2"></span> Weekend</div>
 
                   <div className="flex items-center print:hidden"><span className="w-3 h-3 ring-2 ring-yellow-400 rounded-sm mr-2"></span> Today</div>
                 </div>

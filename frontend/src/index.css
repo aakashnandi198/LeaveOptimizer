@@ -6,17 +6,23 @@
   :root {
     --bg-app: #f9fafb; /* gray-50 */
     --bg-card: #ffffff;
-    --text-main: #1f2937; /* gray-800 */
+    --bg-sidebar: #ffffff;
+    --text-main: #111827; /* gray-900 */
     --text-muted: #6b7280; /* gray-500 */
     --border-color: #f3f4f6; /* gray-100 */
+    --input-bg: #ffffff;
+    --input-border: #e5e7eb; /* gray-200 */
   }
 
   html.dark {
     --bg-app: #030712; /* gray-950 */
     --bg-card: #111827; /* gray-900 */
+    --bg-sidebar: #111827;
     --text-main: #f9fafb; /* gray-50 */
     --text-muted: #9ca3af; /* gray-400 */
     --border-color: #1f2937; /* gray-800 */
+    --input-bg: #1f2937; /* gray-800 */
+    --input-border: #374151; /* gray-700 */
   }
 
   body {
@@ -54,7 +60,6 @@
 .themed-card {
   background-color: var(--bg-card);
   border-color: var(--border-color);
-  color: var(--text-main);
 }
 
 .themed-text {
@@ -63,4 +68,10 @@
 
 .themed-text-muted {
   color: var(--text-muted);
+}
+
+.themed-input {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-main);
 }
