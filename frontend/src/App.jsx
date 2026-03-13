@@ -437,7 +437,7 @@ function App() {
                   <button onClick={() => setSelectionMode('holiday')} className={`flex-1 py-2 rounded-xl text-[9px] font-black transition-all uppercase tracking-widest ${selectionMode === 'holiday' ? 'bg-blue-500 text-white shadow-lg' : 'bg-white text-gray-400 border border-gray-100'}`}>HOL</button>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => {setPlannedStrategy([]); setManualSickDays([]); setManualPaidDays([]); setManualHolidays([]); setDpGrid(null);}} className="flex-1 bg-red-500 text-white font-black py-3 rounded-xl hover:bg-red-600 transition-all text-xs uppercase shadow-md active:scale-95 tracking-widest">CLEAR</button>
+                  <button onClick={() => {setPlannedStrategy([]); setDpGrid(null); setRemovedHolidays([]);}} className="flex-1 bg-red-500 text-white font-black py-3 rounded-xl hover:bg-red-600 transition-all text-xs uppercase shadow-md active:scale-95 tracking-widest">CLEAR</button>
                   <button onClick={handleOptimize} disabled={loading} className="flex-[2] bg-blue-600 text-white font-black py-3 rounded-xl hover:bg-blue-700 transition-all text-xs shadow-md uppercase active:scale-95 tracking-widest">{loading ? '...' : 'OPTIMIZE'}</button>
                 </div>
                 <button 
