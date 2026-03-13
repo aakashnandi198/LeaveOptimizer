@@ -85,7 +85,7 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
             textColor = "themed-text-muted";
             cursor = "cursor-pointer hover:opacity-100 transition-opacity";
           } else if (isWeekend) {
-            bgColor = "bg-gray-50 dark:bg-gray-900/50";
+            bgColor = "themed-input opacity-30";
             textColor = "themed-text-muted";
             cursor = "cursor-default";
           }
