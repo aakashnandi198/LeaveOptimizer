@@ -246,12 +246,14 @@ function App() {
   });
 
   useEffect(() => {
-    console.log("DarkMode Toggle:", darkMode);
+    console.log("DarkMode Effect Fired:", darkMode);
     localStorage.setItem('darkMode', darkMode);
     if (darkMode) {
       document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
     }
   }, [darkMode]);
 
@@ -379,7 +381,7 @@ function App() {
   }, [plannedStrategy, manualPaidDays, manualSickDays, manualHolidays, holidays, year]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 md:p-8 text-sm font-bold print:bg-white print:p-0 antialiased text-gray-800 dark:text-gray-200 print-container transition-colors duration-500">
+    <div className={`min-h-screen ${darkMode ? 'dark' : ''} bg-gray-50 dark:bg-gray-950 p-4 md:p-8 text-sm font-bold print:bg-white print:p-0 antialiased text-gray-800 dark:text-gray-200 print-container transition-colors duration-500`}>
       <div className="max-w-[1600px] mx-auto print:max-w-none">
         
         {/* Print-only Header */}
@@ -404,7 +406,10 @@ function App() {
           <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight flex items-center"><TodayIcon /> Leave Optimizer</h1>
           <div className="flex items-center gap-3">
             <button 
-              onClick={() => setDarkMode(!darkMode)} 
+              onClick={() => {
+                console.log("Toggle Button Clicked");
+                setDarkMode(prev => !prev);
+              }} 
               className="p-2.5 rounded-xl bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-blue-500 dark:hover:border-blue-400 transition-all shadow-sm active:scale-95"
               title="Toggle Dark Mode"
             >
