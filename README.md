@@ -5,10 +5,16 @@ The **Leave Optimizer** is a tool designed to help you maximize your consecutive
 ## Features
 
 - **Optimal Leave Calculation:** Uses dynamic programming to find the best blocks of time off.
-- **Customizable Tuning:** Adjust "Length Bias" (to prioritize longer breaks) and "Stinginess" (to conserve leave days).
-- **Manual Overrides:** Manually mark sick days, paid days, or custom public holidays.
+- **Anchor-Based Optimization:** Suggested leave blocks are strategically built around "anchors" (Public Holidays or Sick Days) to ensure high-value bridges.
+- **Customizable Tuning:** Adjust "Length Bias" to prioritize longer continuous breaks.
+- **Manual Overrides:** 
+  - Manually mark **Sick Days** and **Paid Days**.
+  - Add **Custom Public Holidays** with personalized descriptions.
+  - **Remove/Ignore** API-provided holidays that you don't actually get.
 - **Global Holiday Data:** Fetches public holidays for various countries and regions.
-- **Interactive Calendar:** Real-time visualization of your leave strategy.
+- **Interactive Calendar:** Real-time visualization of your leave strategy with beautiful, color-coded days.
+- **DP Heatmap Visualization:** A debug view that exposes the underlying Dynamic Programming "Utility" grid as an interactive heatmap.
+- **Print-Ready:** Beautifully formatted A4 Landscape PDF exports with full color preservation.
 
 ---
 
@@ -73,12 +79,16 @@ The **Leave Optimizer** is a tool designed to help you maximize your consecutive
 
 1.  Select your **Country** and **Region**.
 2.  Set your **Paid Leave Budget** and **Sick Day Budget**.
-3.  (Optional) Click on the calendar days to manually mark **Sick Days**, **Manual Paid Days**, or **Custom Holidays**.
-4.  Adjust the **Tuning** sliders:
-    - **Length Bias:** Higher values favor longer continuous blocks of time off.
-    - **Stinginess:** Higher values minimize the number of leave days spent.
+3.  **Manual Editing (Calendar Click):**
+    - **SICK/PAID Mode:** Click days to mark them.
+    - **HOL (Holiday) Mode:** 
+      - Click a blank day to add a **Custom Holiday** (you will be prompted for a description).
+      - Click an existing API holiday to **Remove/Ignore** it.
+4.  **Tuning:** Adjust **Length Bias** to favor longer breaks.
 5.  Click **OPTIMIZE** to generate your plan.
-6.  Use **Print Plan** to save or print your optimized calendar.
+6.  **Debug:** Toggle **DEBUG DP GRID** to see the internal cost-benefit analysis.
+7.  **Clear:** Use the **CLEAR** button to reset the suggested plan while **preserving** your manual entries.
+8.  **Print:** Use **Print Plan** to generate a beautiful A4 Landscape PDF.
 
 ---
 
