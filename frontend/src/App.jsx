@@ -246,14 +246,11 @@ function App() {
   });
 
   useEffect(() => {
-    console.log("DarkMode Effect Fired:", darkMode);
     localStorage.setItem('darkMode', darkMode);
     if (darkMode) {
       document.documentElement.classList.add('dark');
-      document.body.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
-      document.body.classList.remove('dark');
     }
   }, [darkMode]);
 
@@ -381,7 +378,11 @@ function App() {
   }, [plannedStrategy, manualPaidDays, manualSickDays, manualHolidays, holidays, year]);
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'dark' : ''} bg-gray-50 dark:bg-gray-950 p-4 md:p-8 text-sm font-bold print:bg-white print:p-0 antialiased text-gray-800 dark:text-gray-200 print-container transition-colors duration-500`}>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 md:p-8 text-sm font-bold print:bg-white print:p-0 antialiased text-gray-800 dark:text-gray-200 print-container transition-colors duration-500">
+      {/* Dark Mode Debug */}
+      <div className="fixed bottom-2 right-2 z-50 text-[10px] bg-red-500 text-white px-2 py-1 rounded pointer-events-none print:hidden">
+        Debug: {darkMode ? 'DARK ON' : 'LIGHT ON'} | HTML Class: {document.documentElement.classList.contains('dark') ? 'HAS DARK' : 'NO DARK'}
+      </div>
       <div className="max-w-[1600px] mx-auto print:max-w-none">
         
         {/* Print-only Header */}
