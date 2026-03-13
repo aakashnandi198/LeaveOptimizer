@@ -11,7 +11,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, start
  * - Tiny: text-[8px] font-bold
  */
 
-const Calendar = ({ year, leaveDates, manualSickDays, manualPaidDays, manualHolidays, holidays, onDayClick }) => {
+const Calendar = ({ year, leaveDates, manualSickDays, manualPaidDays, manualHolidays, removedHolidays, holidays, onDayClick }) => {
   const months = Array.from({ length: 12 }, (_, i) => new Date(year, i, 1));
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 print:grid-cols-4 print:gap-x-4 print:gap-y-2">
@@ -23,6 +23,7 @@ const Calendar = ({ year, leaveDates, manualSickDays, manualPaidDays, manualHoli
           manualSickDays={manualSickDays}
           manualPaidDays={manualPaidDays}
           manualHolidays={manualHolidays}
+          removedHolidays={removedHolidays}
           holidays={holidays} 
           onDayClick={onDayClick}
         />
@@ -31,7 +32,7 @@ const Calendar = ({ year, leaveDates, manualSickDays, manualPaidDays, manualHoli
   );
 };
 
-const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolidays, holidays, onDayClick }) => {
+const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolidays, removedHolidays, holidays, onDayClick }) => {
   const start = startOfWeek(startOfMonth(month));
   const end = endOfWeek(endOfMonth(month));
   const days = eachDayOfInterval({ start, end });
@@ -51,8 +52,11 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
           const isManualPaid = manualPaidDays.includes(dateStr);
           const isSick = manualSickDays.includes(dateStr);
           const isManualHoliday = manualHolidays.includes(dateStr);
-          const holidayName = holidayMap[dateStr] || (isManualHoliday ? "Manual Holiday" : null);
+          const isRemoved = removedHolidays.includes(dateStr);
+          const rawHolidayName = holidayMap[dateStr];
+          const holidayName = isManualHoliday ? "Manual Holiday" : rawHolidayName;
           const isHoliday = !!holidayName;
+          const isActiveHoliday = isHoliday && !isRemoved;
           const isWeekend = day.getDay() === 0 || day.getDay() === 6;
           const _isToday = isToday(day);
 
@@ -73,9 +77,13 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
           } else if (isSick) {
             bgColor = "bg-orange-500";
             textColor = "text-white";
-          } else if (isHoliday) {
+          } else if (isActiveHoliday) {
             bgColor = "bg-blue-500";
             textColor = "text-white";
+          } else if (isRemoved) {
+            bgColor = "bg-gray-100";
+            textColor = "text-gray-400";
+            cursor = "cursor-pointer hover:bg-gray-200";
           } else if (isWeekend) {
             bgColor = "bg-gray-50";
             textColor = "text-gray-400";
@@ -94,7 +102,7 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
               <span className="text-[10px] font-bold print:text-[7px]">{format(day, 'd')}</span>
               {holidayName && isCurrentMonth && (
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-black text-white text-[8px] p-1 rounded z-10 whitespace-nowrap px-2 font-bold uppercase tracking-tighter">
-                  {holidayName}
+                  {holidayName} {isRemoved ? "(REMOVED)" : ""}
                 </div>
               )}
             </div>
@@ -223,6 +231,7 @@ function App() {
   const [manualSickDays, setManualSickDays] = useState([]);
   const [manualPaidDays, setManualPaidDays] = useState([]);
   const [manualHolidays, setManualHolidays] = useState([]);
+  const [removedHolidays, setRemovedHolidays] = useState([]);
   const [selectionMode, setSelectionMode] = useState('sick'); 
   
   const [holidays, setHolidays] = useState([]);
@@ -265,12 +274,23 @@ function App() {
   const handleDayClick = (dateStr, isHoliday, isWeekend) => {
     if (isWeekend) return;
     if (selectionMode === 'holiday') {
-      setManualHolidays(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : [...prev, dateStr]);
+      if (isHoliday && !manualHolidays.includes(dateStr)) {
+        // Toggle removing an API holiday
+        setRemovedHolidays(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : [...prev, dateStr]);
+      } else {
+        // Toggle a manual holiday
+        setManualHolidays(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : [...prev, dateStr]);
+        setRemovedHolidays(prev => prev.filter(d => d !== dateStr));
+      }
       setManualSickDays(prev => prev.filter(d => d !== dateStr));
       setManualPaidDays(prev => prev.filter(d => d !== dateStr));
       return;
     }
-    if (isHoliday && !manualHolidays.includes(dateStr)) return;
+    
+    // Don't allow marking sick/paid on a holiday UNLESS it's been removed
+    const isActiveHoliday = (isHoliday && !removedHolidays.includes(dateStr)) || manualHolidays.includes(dateStr);
+    if (isActiveHoliday) return;
+
     if (selectionMode === 'sick') {
       setManualSickDays(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : (prev.length < sickBudget ? [...prev, dateStr] : prev));
       setManualPaidDays(prev => prev.filter(d => d !== dateStr));
@@ -289,6 +309,7 @@ function App() {
         country, province: selectedProvince || null, leave_count: leaveCount, year,
         manual_sick_days: manualSickDays, manual_paid_days: manualPaidDays,
         manual_public_holidays: manualHolidays,
+        removed_public_holidays: removedHolidays,
         numerator_power: numPower, denominator_power: denPower
       });
       setPlannedStrategy(response.data.strategy);
@@ -304,7 +325,10 @@ function App() {
     }
     const manualLeaves = new Set(manualPaidDays);
     const sickDays = new Set(manualSickDays);
-    const holidayDates = new Set([...holidays.map(h => h.date), ...manualHolidays]);
+    const holidayDates = new Set([
+      ...holidays.map(h => h.date).filter(d => !removedHolidays.includes(d)), 
+      ...manualHolidays
+    ]);
     const allUserOff = new Set([...suggestedLeaves, ...manualLeaves, ...sickDays]);
     
     const yearStart = new Date(year, 0, 1);
@@ -441,7 +465,9 @@ function App() {
                   <div className="flex items-center"><span className="w-3 h-3 bg-green-500 rounded-sm mr-2"></span> Suggested</div>
                   <div className="flex items-center"><span className="w-3 h-3 bg-green-700 rounded-sm mr-2"></span> Manual Paid</div>
                   <div className="flex items-center"><span className="w-3 h-3 bg-orange-500 rounded-sm mr-2"></span> Manual Sick</div>
+                  <div className="flex items-center"><span className="w-3 h-3 bg-gray-100 border rounded-sm mr-2"></span> Removed Holiday</div>
                   <div className="flex items-center"><span className="w-3 h-3 bg-gray-50 border rounded-sm mr-2"></span> Weekend</div>
+
                   <div className="flex items-center print:hidden"><span className="w-3 h-3 ring-2 ring-yellow-400 rounded-sm mr-2"></span> Today</div>
                 </div>
                 
@@ -451,9 +477,11 @@ function App() {
                   manualSickDays={manualSickDays} 
                   manualPaidDays={manualPaidDays} 
                   manualHolidays={manualHolidays}
+                  removedHolidays={removedHolidays}
                   holidays={holidays} 
                   onDayClick={handleDayClick} 
                 />
+
               </>
             ) : (
               <DPGridView grid={dpGrid} dates={calDates} />

@@ -24,6 +24,7 @@ class OptimizeRequest(BaseModel):
     manual_sick_days: List[str] = []
     manual_paid_days: List[str] = []
     manual_public_holidays: List[str] = []
+    removed_public_holidays: List[str] = []
     numerator_power: float = 1.0
     denominator_power: float = 1.0
 
@@ -78,7 +79,9 @@ async def optimize_leaves(req: OptimizeRequest):
     try:
         raw_holidays = get_holidays_raw(req.year, req.country)
         holidays_data = filter_holidays(raw_holidays, req.province)
-        holiday_map = {h['date']: h['name'] for h in holidays_data}
+        
+        removed_set = set(req.removed_public_holidays)
+        holiday_map = {h['date']: h['name'] for h in holidays_data if h['date'] not in removed_set}
         
         # Add manual holidays to the map
         for d in req.manual_public_holidays:
