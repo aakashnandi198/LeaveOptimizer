@@ -60,13 +60,13 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
           const isWeekend = day.getDay() === 0 || day.getDay() === 6;
           const _isToday = isToday(day);
 
-          let bgColor = "bg-white dark:bg-gray-800";
+          let bgColor = "themed-card";
           let textColor = "themed-text";
           let border = "";
           let cursor = "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700";
 
           if (!isCurrentMonth) {
-            textColor = "text-gray-200 dark:text-gray-800";
+            textColor = "themed-text-muted opacity-20";
             cursor = "cursor-default";
           } else if (isManualPaid) {
             bgColor = "bg-green-700";
@@ -81,9 +81,9 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
             bgColor = "bg-blue-500";
             textColor = "text-white";
           } else if (isRemoved) {
-            bgColor = "bg-gray-100 dark:bg-gray-700";
+            bgColor = "themed-input opacity-50";
             textColor = "themed-text-muted";
-            cursor = "cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600";
+            cursor = "cursor-pointer hover:opacity-100 transition-opacity";
           } else if (isWeekend) {
             bgColor = "bg-gray-50 dark:bg-gray-900/50";
             textColor = "themed-text-muted";
