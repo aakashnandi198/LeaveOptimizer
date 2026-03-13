@@ -2,42 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
-/* High-priority Dark Mode Overrides */
-html.dark body {
-  background-color: #030712 !important; /* gray-950 */
-  color: #f9fafb !important; /* gray-50 */
-}
-
-html.dark .bg-white {
-  background-color: #111827 !important; /* gray-900 */
-  color: #f9fafb !important;
-}
-
-html.dark .bg-gray-50 {
-  background-color: #111827 !important;
-}
-
-html.dark .border-gray-100, 
-html.dark .border-gray-200 {
-  border-color: #1f2937 !important; /* gray-800 */
-}
-
-html.dark .text-gray-800,
-html.dark .text-gray-900 {
-  color: #f9fafb !important;
-}
-
-html.dark .text-gray-400,
-html.dark .text-gray-500 {
-  color: #6b7280 !important; /* gray-500 */
-}
-
-/* Ensure transition */
-body {
-  @apply transition-colors duration-300;
-}
-
 @layer base {
+  :root {
+    --bg-app: #f9fafb; /* gray-50 */
+    --bg-card: #ffffff;
+    --text-main: #1f2937; /* gray-800 */
+    --text-muted: #6b7280; /* gray-500 */
+    --border-color: #f3f4f6; /* gray-100 */
+  }
+
+  html.dark {
+    --bg-app: #030712; /* gray-950 */
+    --bg-card: #111827; /* gray-900 */
+    --text-main: #f9fafb; /* gray-50 */
+    --text-muted: #9ca3af; /* gray-400 */
+    --border-color: #1f2937; /* gray-800 */
+  }
+
+  body {
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    @apply transition-colors duration-300;
+  }
+
   @media print {
     html {
       -webkit-print-color-adjust: exact !important;
@@ -51,6 +38,7 @@ body {
     
     body {
       background-color: white !important;
+      color: black !important;
       -webkit-print-color-adjust: exact;
     }
 
@@ -60,4 +48,19 @@ body {
       overflow: hidden !important;
     }
   }
+}
+
+/* Theme Utilities */
+.themed-card {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-main);
+}
+
+.themed-text {
+  color: var(--text-main);
+}
+
+.themed-text-muted {
+  color: var(--text-muted);
 }

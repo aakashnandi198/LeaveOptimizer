@@ -39,9 +39,9 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
   const holidayMap = holidays.reduce((acc, h) => { acc[h.date] = h.name; return acc; }, {});
 
   return (
-    <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 print:shadow-none print:border-gray-100 print:p-1.5 print:break-inside-avoid">
-      <h3 className="text-sm font-black mb-3 text-center text-gray-800 dark:text-gray-200 print:text-[10px] print:mb-1">{format(month, 'MMMM yyyy')}</h3>
-      <div className="grid grid-cols-7 gap-1 text-center text-[8px] mb-2 text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest print:gap-0.5 print:mb-1">
+    <div className="themed-card p-4 rounded-xl shadow-sm border print:shadow-none print:border-gray-100 print:p-1.5 print:break-inside-avoid">
+      <h3 className="text-sm font-black mb-3 text-center themed-text print:text-[10px] print:mb-1">{format(month, 'MMMM yyyy')}</h3>
+      <div className="grid grid-cols-7 gap-1 text-center text-[8px] mb-2 themed-text-muted font-black uppercase tracking-widest print:gap-0.5 print:mb-1">
         <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
       </div>
       <div className="grid grid-cols-7 gap-1 print:gap-0.5">
@@ -61,7 +61,7 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
           const _isToday = isToday(day);
 
           let bgColor = "bg-white dark:bg-gray-800";
-          let textColor = "text-gray-900 dark:text-gray-100";
+          let textColor = "themed-text";
           let border = "";
           let cursor = "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700";
 
@@ -82,11 +82,11 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
             textColor = "text-white";
           } else if (isRemoved) {
             bgColor = "bg-gray-100 dark:bg-gray-700";
-            textColor = "text-gray-400 dark:text-gray-500";
+            textColor = "themed-text-muted";
             cursor = "cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600";
           } else if (isWeekend) {
             bgColor = "bg-gray-50 dark:bg-gray-900/50";
-            textColor = "text-gray-400 dark:text-gray-600";
+            textColor = "themed-text-muted";
             cursor = "cursor-default";
           }
           
@@ -378,14 +378,14 @@ function App() {
   }, [plannedStrategy, manualPaidDays, manualSickDays, manualHolidays, holidays, year]);
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'dark' : ''} p-4 md:p-8 text-sm font-bold print:bg-white print:p-0 antialiased print-container`}>
+    <div className={`min-h-screen ${darkMode ? 'dark' : ''} themed-text p-4 md:p-8 text-sm font-bold print:bg-white print:p-0 antialiased print-container transition-colors duration-300`}>
       <div className="max-w-[1600px] mx-auto print:max-w-none">
         
         {/* Print-only Header */}
-        <div className="hidden print:flex justify-between items-end mb-6 pb-4 border-b-2 border-gray-200 dark:border-gray-800">
+        <div className="hidden print:flex justify-between items-end mb-6 pb-4 border-b-2 border-gray-200">
           <div>
-            <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">{year} Leave Strategy</h1>
-            <p className="text-gray-500 uppercase tracking-widest text-[10px] mt-1">{country} • {selectedProvince || 'All Regions'}</p>
+            <h1 className="text-3xl font-black tracking-tight">{year} Leave Strategy</h1>
+            <p className="themed-text-muted uppercase tracking-widest text-[10px] mt-1">{country} • {selectedProvince || 'All Regions'}</p>
           </div>
           <div className="flex gap-6 text-right">
             <div>
@@ -400,14 +400,11 @@ function App() {
         </div>
 
         <div className="flex justify-between items-center mb-6 print:hidden">
-          <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight flex items-center"><TodayIcon /> Leave Optimizer</h1>
+          <h1 className="text-3xl font-black tracking-tight flex items-center"><TodayIcon /> Leave Optimizer</h1>
           <div className="flex items-center gap-3">
             <button 
-              onClick={() => {
-                console.log("Toggle Button Clicked");
-                setDarkMode(prev => !prev);
-              }} 
-              className="p-2.5 rounded-xl bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-blue-500 dark:hover:border-blue-400 transition-all shadow-sm active:scale-95"
+              onClick={() => setDarkMode(prev => !prev)} 
+              className="p-2.5 rounded-xl themed-card border-2 hover:border-blue-500 transition-all shadow-sm active:scale-95"
               title="Toggle Dark Mode"
             >
               {darkMode ? '☀️' : '🌙'}
@@ -419,36 +416,36 @@ function App() {
         <div className="flex flex-col md:flex-row gap-6 items-start">
           
           <div className="w-full md:w-[320px] lg:w-[380px] md:sticky md:top-6 z-20 print:hidden">
-            <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl p-6 border border-gray-100 dark:border-gray-800 space-y-8">
+            <div className="themed-card rounded-3xl shadow-xl p-6 border space-y-8">
               
               <div className="space-y-4">
-                <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-widest border-b dark:border-gray-800 pb-2">1. Region & Budgets</h3>
+                <h3 className="text-[9px] font-black themed-text-muted uppercase tracking-widest border-b pb-2">1. Region & Budgets</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="col-span-2">
-                    <select value={country} onChange={(e) => {setCountry(e.target.value); setSelectedProvince('');}} className="w-full border-2 dark:border-gray-800 p-2.5 rounded-xl bg-white dark:bg-gray-800 focus:border-blue-500 dark:focus:border-blue-400 transition-colors outline-none text-sm font-black shadow-sm appearance-none dark:text-white">
+                    <select value={country} onChange={(e) => {setCountry(e.target.value); setSelectedProvince('');}} className="w-full border-2 themed-card p-2.5 rounded-xl focus:border-blue-500 transition-colors outline-none text-sm font-black shadow-sm appearance-none">
                       <option value="">Select Country</option>
                       {countries.map(c => <option key={c.countryCode} value={c.countryCode}>{c.name}</option>)}
                     </select>
                   </div>
                   <div className="col-span-2">
-                    <select value={selectedProvince} onChange={(e) => setSelectedProvince(e.target.value)} className="w-full border-2 dark:border-gray-800 p-2.5 rounded-xl bg-white dark:bg-gray-800 focus:border-blue-500 dark:focus:border-blue-400 transition-colors outline-none text-sm font-black shadow-sm appearance-none dark:text-white">
+                    <select value={selectedProvince} onChange={(e) => setSelectedProvince(e.target.value)} className="w-full border-2 themed-card p-2.5 rounded-xl focus:border-blue-500 transition-colors outline-none text-sm font-black shadow-sm appearance-none">
                       <option value="">All Regions</option>
                       {provinces.map(p => <option key={p} value={p}>{p}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="text-[9px] font-black text-gray-400 uppercase ml-1 block">Paid</label>
-                    <input type="number" value={leaveCount} onChange={(e) => setLeaveCount(parseInt(e.target.value))} className="w-full border-2 dark:border-gray-800 bg-white dark:bg-gray-800 p-2.5 rounded-xl outline-none text-sm font-black shadow-sm dark:text-white" />
+                    <label className="text-[9px] font-black themed-text-muted uppercase ml-1 block">Paid</label>
+                    <input type="number" value={leaveCount} onChange={(e) => setLeaveCount(parseInt(e.target.value))} className="w-full border-2 themed-card p-2.5 rounded-xl outline-none text-sm font-black shadow-sm" />
                   </div>
                   <div>
-                    <label className="text-[9px] font-black text-gray-400 uppercase ml-1 block">Sick</label>
-                    <input type="number" value={sickBudget} onChange={(e) => setSickBudget(parseInt(e.target.value))} className="w-full border-2 dark:border-gray-800 bg-white dark:bg-gray-800 p-2.5 rounded-xl outline-none text-sm font-black shadow-sm dark:text-white" />
+                    <label className="text-[9px] font-black themed-text-muted uppercase ml-1 block">Sick</label>
+                    <input type="number" value={sickBudget} onChange={(e) => setSickBudget(parseInt(e.target.value))} className="w-full border-2 themed-card p-2.5 rounded-xl outline-none text-sm font-black shadow-sm" />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800">
-                <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">2. Tuning</h3>
+                <h3 className="text-[9px] font-black themed-text-muted uppercase tracking-widest">2. Tuning</h3>
                 <PowerSlider label="Length Bias" value={numPower} onChange={setNumPower} colorClass="accent-blue-600" id="num-marks" />
                 
                 <div className="bg-blue-900 dark:bg-blue-950 text-white p-4 rounded-2xl shadow-xl border border-blue-800 dark:border-blue-900">
@@ -463,11 +460,11 @@ function App() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-widest border-b dark:border-gray-800 pb-2">3. Controls</h3>
+                <h3 className="text-[9px] font-black themed-text-muted uppercase tracking-widest border-b dark:border-gray-800 pb-2">3. Controls</h3>
                 <div className="flex flex-wrap gap-2">
-                  <button onClick={() => setSelectionMode('sick')} className={`flex-1 py-2 rounded-xl text-[9px] font-black transition-all uppercase tracking-widest ${selectionMode === 'sick' ? 'bg-orange-500 text-white shadow-md' : 'bg-white dark:bg-gray-800 text-gray-400 border border-gray-100 dark:border-gray-800'}`}>SICK ({manualSickDays.length})</button>
-                  <button onClick={() => setSelectionMode('paid')} className={`flex-1 py-2 rounded-xl text-[9px] font-black transition-all uppercase tracking-widest ${selectionMode === 'paid' ? 'bg-green-700 text-white shadow-lg' : 'bg-white dark:bg-gray-800 text-gray-400 border border-gray-100 dark:border-gray-800'}`}>PAID ({manualPaidDays.length})</button>
-                  <button onClick={() => setSelectionMode('holiday')} className={`flex-1 py-2 rounded-xl text-[9px] font-black transition-all uppercase tracking-widest ${selectionMode === 'holiday' ? 'bg-blue-500 text-white shadow-lg' : 'bg-white dark:bg-gray-800 text-gray-400 border border-gray-100 dark:border-gray-800'}`}>HOL</button>
+                  <button onClick={() => setSelectionMode('sick')} className={`flex-1 py-2 rounded-xl text-[9px] font-black transition-all uppercase tracking-widest ${selectionMode === 'sick' ? 'bg-orange-500 text-white shadow-md' : 'themed-card text-gray-400 border border-gray-100'}`}>SICK ({manualSickDays.length})</button>
+                  <button onClick={() => setSelectionMode('paid')} className={`flex-1 py-2 rounded-xl text-[9px] font-black transition-all uppercase tracking-widest ${selectionMode === 'paid' ? 'bg-green-700 text-white shadow-lg' : 'themed-card text-gray-400 border border-gray-100'}`}>PAID ({manualPaidDays.length})</button>
+                  <button onClick={() => setSelectionMode('holiday')} className={`flex-1 py-2 rounded-xl text-[9px] font-black transition-all uppercase tracking-widest ${selectionMode === 'holiday' ? 'bg-blue-500 text-white shadow-lg' : 'themed-card text-gray-400 border border-gray-100'}`}>HOL</button>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => {setPlannedStrategy([]); setDpGrid(null); setRemovedHolidays([]);}} className="flex-1 bg-red-500 text-white font-black py-3 rounded-xl hover:bg-red-600 transition-all text-xs uppercase shadow-md active:scale-95 tracking-widest">CLEAR</button>
@@ -482,9 +479,9 @@ function App() {
               </div>
 
               <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center px-2">
-                <div className="text-center"><p className="text-2xl font-black text-blue-600 dark:text-blue-400">{totalDaysOff}</p><p className="text-[8px] uppercase font-black text-gray-400 tracking-widest">Days Off</p></div>
+                <div className="text-center"><p className="text-2xl font-black text-blue-600 dark:text-blue-400">{totalDaysOff}</p><p className="text-[8px] uppercase font-black themed-text-muted tracking-widest">Days Off</p></div>
                 <div className="h-8 w-px bg-gray-100 dark:bg-gray-800"></div>
-                <div className="text-center"><p className="text-2xl font-black text-green-600 dark:text-green-400">{overallEfficiency}x</p><p className="text-[8px] uppercase font-black text-gray-400 tracking-widest">Efficiency</p></div>
+                <div className="text-center"><p className="text-2xl font-black text-green-600 dark:text-green-400">{overallEfficiency}x</p><p className="text-[8px] uppercase font-black themed-text-muted tracking-widest">Efficiency</p></div>
               </div>
 
             </div>
@@ -493,7 +490,7 @@ function App() {
           <div className="flex-1 w-full space-y-8">
             {!showDebug ? (
               <>
-                <div className="flex flex-wrap gap-4 mb-2 text-[8px] font-black uppercase tracking-widest print:mb-6 justify-center lg:justify-start dark:text-gray-400">
+                <div className="flex flex-wrap gap-4 mb-2 text-[8px] font-black uppercase tracking-widest print:mb-6 justify-center lg:justify-start themed-text-muted">
                   <div className="flex items-center"><span className="w-3 h-3 bg-blue-500 rounded-sm mr-2"></span> Holiday</div>
                   <div className="flex items-center"><span className="w-3 h-3 bg-green-500 rounded-sm mr-2"></span> Suggested</div>
                   <div className="flex items-center"><span className="w-3 h-3 bg-green-700 rounded-sm mr-2"></span> Manual Paid</div>
