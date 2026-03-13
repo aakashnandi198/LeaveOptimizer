@@ -107,9 +107,16 @@ async def optimize_leaves(req: OptimizeRequest):
         curr = start_date
         while curr <= end_date:
             d_str = curr.strftime("%Y-%m-%d")
-            # A day is "off" if it's a weekend, a holiday (API or manual), a sick day, OR a manual paid day
-            is_off = is_weekend(curr) or d_str in holiday_map or d_str in manual_sick_set or d_str in manual_paid_set
-            calendar.append({"date": d_str, "is_off": is_off})
+            
+            is_h = d_str in holiday_map
+            is_s = d_str in manual_sick_set
+            is_w = is_weekend(curr)
+            is_p = d_str in manual_paid_set
+            
+            is_off = is_w or is_h or is_s or is_p
+            is_anchor = is_h or is_s
+            
+            calendar.append({"date": d_str, "is_off": is_off, "is_anchor": is_anchor})
             curr += timedelta(days=1)
         
         N = len(calendar)
@@ -133,6 +140,10 @@ async def optimize_leaves(req: OptimizeRequest):
                         while actual_start > 0 and calendar[actual_start-1]["is_off"]: actual_start -= 1
                         actual_end = j
                         while actual_end < N - 1 and calendar[actual_end+1]["is_off"]: actual_end += 1
+                        
+                        # Check if block contains at least one anchor (holiday or sick day)
+                        has_anchor = any(calendar[k]["is_anchor"] for k in range(actual_start, actual_end + 1))
+                        if not has_anchor: continue
                             
                         length = actual_end - actual_start + 1
                         cost = workdays_found
