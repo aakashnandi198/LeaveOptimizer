@@ -388,7 +388,7 @@ function App() {
             <p className="themed-text-muted uppercase tracking-widest text-[10px] mt-1 print:text-gray-600">{country} • {selectedProvince || 'All Regions'}</p>
           </div>
           <div className="flex gap-6 text-right">
-            <div title="Total consecutive days off in all blocks that include a leave day.">
+            <div title="Total length of vacation blocks triggered by your leave. Isolated weekends or holidays without adjacent leave days are NOT counted.">
               <p className="text-2xl font-black text-blue-600">{totalDaysOff}</p>
               <p className="text-[8px] uppercase font-black text-gray-400 tracking-widest">Total Days Off</p>
             </div>
@@ -479,7 +479,7 @@ function App() {
               </div>
 
               <div className="pt-4 border-t flex justify-between items-center px-2">
-                <div className="text-center cursor-help" title="Total length of all vacation blocks that contain at least one of your leave days.">
+                <div className="text-center cursor-help" title="Total length of vacation blocks triggered by your leave. Isolated weekends or holidays without adjacent leave days are NOT counted.">
                   <p className="text-2xl font-black text-blue-600 dark:text-blue-400">{totalDaysOff}</p>
                   <p className="text-[8px] uppercase font-black themed-text-muted tracking-widest">Days Off</p>
                 </div>
