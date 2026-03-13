@@ -51,10 +51,10 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
           const isSuggestedLeave = leaveDates.includes(dateStr);
           const isManualPaid = manualPaidDays.includes(dateStr);
           const isSick = manualSickDays.includes(dateStr);
-          const isManualHoliday = manualHolidays.includes(dateStr);
+          const isManualHoliday = manualHolidays.find(mh => mh.date === dateStr);
           const isRemoved = removedHolidays.includes(dateStr);
           const rawHolidayName = holidayMap[dateStr];
-          const holidayName = isManualHoliday ? "Manual Holiday" : rawHolidayName;
+          const holidayName = isManualHoliday ? isManualHoliday.name : rawHolidayName;
           const isHoliday = !!holidayName;
           const isActiveHoliday = isHoliday && !isRemoved;
           const isWeekend = day.getDay() === 0 || day.getDay() === 6;
@@ -274,13 +274,20 @@ function App() {
   const handleDayClick = (dateStr, isHoliday, isWeekend) => {
     if (isWeekend) return;
     if (selectionMode === 'holiday') {
-      if (isHoliday && !manualHolidays.includes(dateStr)) {
+      if (isHoliday && !manualHolidays.some(mh => mh.date === dateStr)) {
         // Toggle removing an API holiday
         setRemovedHolidays(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : [...prev, dateStr]);
       } else {
         // Toggle a manual holiday
-        setManualHolidays(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : [...prev, dateStr]);
-        setRemovedHolidays(prev => prev.filter(d => d !== dateStr));
+        if (manualHolidays.some(mh => mh.date === dateStr)) {
+          setManualHolidays(prev => prev.filter(mh => mh.date !== dateStr));
+        } else {
+          const name = prompt("Enter holiday name:", "Manual Holiday");
+          if (name !== null) {
+            setManualHolidays(prev => [...prev, { date: dateStr, name: name || "Manual Holiday" }]);
+            setRemovedHolidays(prev => prev.filter(d => d !== dateStr));
+          }
+        }
       }
       setManualSickDays(prev => prev.filter(d => d !== dateStr));
       setManualPaidDays(prev => prev.filter(d => d !== dateStr));
@@ -288,17 +295,18 @@ function App() {
     }
     
     // Don't allow marking sick/paid on a holiday UNLESS it's been removed
-    const isActiveHoliday = (isHoliday && !removedHolidays.includes(dateStr)) || manualHolidays.includes(dateStr);
+    const isManual = manualHolidays.some(mh => mh.date === dateStr);
+    const isActiveHoliday = (isHoliday && !removedHolidays.includes(dateStr)) || isManual;
     if (isActiveHoliday) return;
 
     if (selectionMode === 'sick') {
       setManualSickDays(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : (prev.length < sickBudget ? [...prev, dateStr] : prev));
       setManualPaidDays(prev => prev.filter(d => d !== dateStr));
-      setManualHolidays(prev => prev.filter(d => d !== dateStr));
+      setManualHolidays(prev => prev.filter(mh => mh.date !== dateStr));
     } else if (selectionMode === 'paid') {
       setManualPaidDays(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : (prev.length < leaveCount ? [...prev, dateStr] : prev));
       setManualSickDays(prev => prev.filter(d => d !== dateStr));
-      setManualHolidays(prev => prev.filter(d => d !== dateStr));
+      setManualHolidays(prev => prev.filter(mh => mh.date !== dateStr));
     }
   };
 
@@ -327,7 +335,7 @@ function App() {
     const sickDays = new Set(manualSickDays);
     const holidayDates = new Set([
       ...holidays.map(h => h.date).filter(d => !removedHolidays.includes(d)), 
-      ...manualHolidays
+      ...manualHolidays.map(mh => mh.date)
     ]);
     const allUserOff = new Set([...suggestedLeaves, ...manualLeaves, ...sickDays]);
     

@@ -16,6 +16,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class ManualHoliday(BaseModel):
+    date: str
+    name: str
+
 class OptimizeRequest(BaseModel):
     country: str
     province: Optional[str] = None
@@ -23,7 +27,7 @@ class OptimizeRequest(BaseModel):
     leave_count: int
     manual_sick_days: List[str] = []
     manual_paid_days: List[str] = []
-    manual_public_holidays: List[str] = []
+    manual_public_holidays: List[ManualHoliday] = []
     removed_public_holidays: List[str] = []
     numerator_power: float = 1.0
     denominator_power: float = 1.0
@@ -84,9 +88,8 @@ async def optimize_leaves(req: OptimizeRequest):
         holiday_map = {h['date']: h['name'] for h in holidays_data if h['date'] not in removed_set}
         
         # Add manual holidays to the map
-        for d in req.manual_public_holidays:
-            if d not in holiday_map:
-                holiday_map[d] = "Manual Holiday"
+        for mh in req.manual_public_holidays:
+            holiday_map[mh.date] = mh.name
         
         manual_sick_set = set(req.manual_sick_days)
         manual_paid_set = set(req.manual_paid_days)
