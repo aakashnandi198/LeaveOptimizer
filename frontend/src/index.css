@@ -32,6 +32,17 @@
   }
 
   @media print {
+    /* FORCE LIGHT MODE FOR PRINTING */
+    :root, html, html.dark {
+      --bg-app: #ffffff !important;
+      --bg-card: #ffffff !important;
+      --text-main: #000000 !important;
+      --text-muted: #4b5563 !important;
+      --border-color: #e5e7eb !important;
+      --input-bg: #f9fafb !important;
+      --input-border: #d1d5db !important;
+    }
+
     html {
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;

@@ -39,7 +39,7 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
   const holidayMap = holidays.reduce((acc, h) => { acc[h.date] = h.name; return acc; }, {});
 
   return (
-    <div className="themed-card p-4 rounded-xl shadow-sm border print:shadow-none print:border-gray-100 print:p-1.5 print:break-inside-avoid">
+    <div className="themed-card p-4 rounded-xl shadow-sm border print:shadow-none print:border-gray-300 print:p-1.5 print:break-inside-avoid">
       <h3 className="text-sm font-black mb-3 text-center themed-text print:text-[10px] print:mb-1">{format(month, 'MMMM yyyy')}</h3>
       <div className="grid grid-cols-7 gap-1 text-center text-[8px] mb-2 themed-text-muted font-black uppercase tracking-widest print:gap-0.5 print:mb-1">
         <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
@@ -382,10 +382,10 @@ function App() {
       <div className="max-w-[1600px] mx-auto print:max-w-none">
         
         {/* Print-only Header */}
-        <div className="hidden print:flex justify-between items-end mb-6 pb-4 border-b-2 border-gray-200">
+        <div className="hidden print:flex justify-between items-end mb-6 pb-4 border-b-2 border-gray-200 print:border-gray-300">
           <div>
-            <h1 className="text-3xl font-black tracking-tight">{year} Leave Strategy</h1>
-            <p className="themed-text-muted uppercase tracking-widest text-[10px] mt-1">{country} • {selectedProvince || 'All Regions'}</p>
+            <h1 className="text-3xl font-black tracking-tight print:text-black">{year} Leave Strategy</h1>
+            <p className="themed-text-muted uppercase tracking-widest text-[10px] mt-1 print:text-gray-600">{country} • {selectedProvince || 'All Regions'}</p>
           </div>
           <div className="flex gap-6 text-right">
             <div>
