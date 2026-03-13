@@ -392,7 +392,7 @@ function App() {
               <p className="text-2xl font-black text-blue-600">{totalDaysOff}</p>
               <p className="text-[8px] uppercase font-black text-gray-400 tracking-widest">Days in Contiguous Blocks</p>
             </div>
-            <div title="Bang for your buck: Total Days Off / Paid Leave Days Spent.">
+            <div title="How much each day of paid leave contributes to the total size of your contiguous blocks. (Days in Blocks / Paid Leave Spent)">
               <p className="text-2xl font-black text-green-600">{overallEfficiency}x</p>
               <p className="text-[8px] uppercase font-black text-gray-400 tracking-widest">Efficiency</p>
             </div>
@@ -484,7 +484,7 @@ function App() {
                   <p className="text-[8px] uppercase font-black themed-text-muted tracking-widest">Days in Contiguous Blocks</p>
                 </div>
                 <div className="h-8 w-px bg-gray-100 dark:bg-gray-800"></div>
-                <div className="text-center cursor-help" title="The multiplier effect of your leave: How many total days off you get for every 1 day of paid leave spent.">
+                <div className="text-center cursor-help" title="How much each day of paid leave contributes to the total size of your contiguous blocks. (Days in Blocks / Paid Leave Spent)">
                   <p className="text-2xl font-black text-green-600 dark:text-green-400">{overallEfficiency}x</p>
                   <p className="text-[8px] uppercase font-black themed-text-muted tracking-widest">Efficiency</p>
                 </div>
