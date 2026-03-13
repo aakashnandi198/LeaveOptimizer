@@ -14,7 +14,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, start
 const Calendar = ({ year, leaveDates, manualSickDays, manualPaidDays, manualHolidays, holidays, onDayClick }) => {
   const months = Array.from({ length: 12 }, (_, i) => new Date(year, i, 1));
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 print:grid-cols-3 print:gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 print:grid-cols-4 print:gap-x-4 print:gap-y-2">
       {months.map((month) => (
         <Month 
           key={month.toISOString()} 
@@ -38,9 +38,9 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
   const holidayMap = holidays.reduce((acc, h) => { acc[h.date] = h.name; return acc; }, {});
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 print:shadow-none print:border-gray-100 print:p-2">
-      <h3 className="text-sm font-black mb-3 text-center text-gray-800 print:text-xs">{format(month, 'MMMM yyyy')}</h3>
-      <div className="grid grid-cols-7 gap-1 text-center text-[8px] mb-2 text-gray-400 font-black uppercase tracking-widest print:gap-0.5">
+    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 print:shadow-none print:border-gray-100 print:p-1.5 print:break-inside-avoid">
+      <h3 className="text-sm font-black mb-3 text-center text-gray-800 print:text-[10px] print:mb-1">{format(month, 'MMMM yyyy')}</h3>
+      <div className="grid grid-cols-7 gap-1 text-center text-[8px] mb-2 text-gray-400 font-black uppercase tracking-widest print:gap-0.5 print:mb-1">
         <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
       </div>
       <div className="grid grid-cols-7 gap-1 print:gap-0.5">
@@ -89,9 +89,9 @@ const Month = ({ month, leaveDates, manualSickDays, manualPaidDays, manualHolida
               key={day.toISOString()} 
               onClick={() => isCurrentMonth && onDayClick(dateStr, isHoliday, isWeekend)}
               title={holidayName || ""}
-              className={`h-8 flex items-center justify-center rounded-md ${bgColor} ${textColor} ${border} ${cursor} print:h-6 print:text-[8px] transition-all duration-200 group relative`}
+              className={`h-8 flex items-center justify-center rounded-md ${bgColor} ${textColor} ${border} ${cursor} print:h-5 print:text-[7px] transition-all duration-200 group relative`}
             >
-              <span className="text-[10px] font-bold print:text-[8px]">{format(day, 'd')}</span>
+              <span className="text-[10px] font-bold print:text-[7px]">{format(day, 'd')}</span>
               {holidayName && isCurrentMonth && (
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-black text-white text-[8px] p-1 rounded z-10 whitespace-nowrap px-2 font-bold uppercase tracking-tighter">
                   {holidayName}
@@ -217,7 +217,7 @@ function App() {
   const [leaveCount, setLeaveCount] = useState(15);
   const [sickBudget, setSickBudget] = useState(5);
   const [numPower, setNumPower] = useState(1.0);
-  const [denPower, setDenPower] = useState(1.0);
+  const denPower = 1.0;
   const [year, setYear] = useState(new Date().getFullYear());
   
   const [manualSickDays, setManualSickDays] = useState([]);
@@ -333,9 +333,27 @@ function App() {
   }, [plannedStrategy, manualPaidDays, manualSickDays, manualHolidays, holidays, year]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8 text-sm font-bold print:bg-white print:p-0 antialiased text-gray-800">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8 text-sm font-bold print:bg-white print:p-0 antialiased text-gray-800 print-container">
       <div className="max-w-[1600px] mx-auto print:max-w-none">
         
+        {/* Print-only Header */}
+        <div className="hidden print:flex justify-between items-end mb-6 pb-4 border-b-2 border-gray-200">
+          <div>
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">{year} Leave Strategy</h1>
+            <p className="text-gray-500 uppercase tracking-widest text-[10px] mt-1">{country} • {selectedProvince || 'All Regions'}</p>
+          </div>
+          <div className="flex gap-6 text-right">
+            <div>
+              <p className="text-2xl font-black text-blue-600">{totalDaysOff}</p>
+              <p className="text-[8px] uppercase font-black text-gray-400 tracking-widest">Total Days Off</p>
+            </div>
+            <div>
+              <p className="text-2xl font-black text-green-600">{overallEfficiency}x</p>
+              <p className="text-[8px] uppercase font-black text-gray-400 tracking-widest">Efficiency</p>
+            </div>
+          </div>
+        </div>
+
         <div className="flex justify-between items-center mb-6 print:hidden">
           <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center"><TodayIcon /> Leave Optimizer</h1>
           <button onClick={() => window.print()} className="bg-gray-900 text-white px-5 py-2 rounded-xl font-black hover:bg-black transition-all shadow-md active:scale-95 text-[10px] uppercase tracking-widest">Print Plan</button>
@@ -375,13 +393,12 @@ function App() {
               <div className="space-y-6 bg-gray-50 p-4 rounded-2xl border-2 border-dashed border-gray-200">
                 <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">2. Tuning</h3>
                 <PowerSlider label="Length Bias" value={numPower} onChange={setNumPower} colorClass="accent-blue-600" id="num-marks" />
-                <PowerSlider label="Stinginess" value={denPower} onChange={setDenPower} colorClass="accent-red-600" id="den-marks" />
                 
                 <div className="bg-blue-900 text-white p-4 rounded-2xl shadow-xl border border-blue-800">
                   <div className="font-mono text-center mb-3">
                     <div className="flex flex-col items-center">
                       <div className="border-b border-blue-400 mb-0.5 px-4 text-sm font-black">L<sup>{numPower.toFixed(1)}</sup></div>
-                      <div className="text-sm font-black">C<sup>{denPower.toFixed(1)}</sup></div>
+                      <div className="text-sm font-black italic opacity-60">Cost</div>
                     </div>
                   </div>
                   <p className="text-[8px] leading-relaxed opacity-50 text-center font-black uppercase tracking-widest">Score = Length / Cost</p>
