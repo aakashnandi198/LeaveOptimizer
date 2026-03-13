@@ -3,22 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    color-scheme: light;
-  }
-  
-  html.dark {
-    color-scheme: dark;
-  }
-
-  body {
-    @apply bg-gray-50 text-gray-800 transition-colors duration-300;
-  }
-
-  .dark body {
-    @apply bg-gray-950 text-gray-200;
-  }
-
   @media print {
     html {
       -webkit-print-color-adjust: exact !important;
