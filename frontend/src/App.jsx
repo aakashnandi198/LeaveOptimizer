@@ -378,7 +378,7 @@ function App() {
   }, [plannedStrategy, manualPaidDays, manualSickDays, manualHolidays, holidays, year]);
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'dark' : ''} bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 p-4 md:p-8 text-sm font-bold print:bg-white print:p-0 antialiased print-container transition-colors duration-500`}>
+    <div className={`min-h-screen ${darkMode ? 'dark' : ''} p-4 md:p-8 text-sm font-bold print:bg-white print:p-0 antialiased print-container`}>
       <div className="max-w-[1600px] mx-auto print:max-w-none">
         
         {/* Print-only Header */}
