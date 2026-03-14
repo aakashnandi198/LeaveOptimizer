@@ -127,6 +127,124 @@ const TodayIcon = () => {
   );
 };
 
+const HelpIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+  </svg>
+);
+
+const InstructionsModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all animate-in fade-in duration-200">
+      <div className="themed-card w-full max-w-2xl rounded-3xl shadow-2xl border p-8 space-y-6 relative overflow-hidden max-h-[90vh] overflow-y-auto">
+        <button 
+          onClick={onClose}
+          className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        
+        <div className="space-y-2">
+          <h2 className="text-3xl font-black tracking-tight">How to use</h2>
+          <p className="themed-text-muted text-xs uppercase font-black tracking-widest">Master your time off with Leave Optimizer</p>
+        </div>
+
+        <div className="space-y-6">
+          <section className="space-y-3">
+            <h3 className="text-sm font-black uppercase tracking-widest text-blue-500 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-blue-500/10 flex items-center justify-center text-[10px]">1</span>
+              Setup Basics
+            </h3>
+            <p className="text-sm themed-text leading-relaxed">
+              Select your <b>Country</b> and <b>Region</b> to load public holidays. Set your <b>Paid Leave Budget</b> and <b>Sick Day Budget</b>.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="text-sm font-black uppercase tracking-widest text-orange-500 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-orange-500/10 flex items-center justify-center text-[10px]">2</span>
+              Sick & Paid Leave
+            </h3>
+            <p className="text-sm themed-text leading-relaxed">
+              Switch to <b>SICK</b> or <b>PAID</b> mode and click calendar days to manually mark them. These are used as "anchors" for the optimization algorithm.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="text-sm font-black uppercase tracking-widest text-indigo-500 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-indigo-500/10 flex items-center justify-center text-[10px]">3</span>
+              Holiday Management
+            </h3>
+            <p className="text-sm themed-text leading-relaxed">
+              Switch to <b>HOL</b> mode. Click any blank day to add a <b>Custom Holiday</b>, or click an existing API holiday to <b>Ignore/Remove</b> it if it doesn't apply to you.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="text-sm font-black uppercase tracking-widest text-purple-500 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-purple-500/10 flex items-center justify-center text-[10px]">4</span>
+              Optimization & Tuning
+            </h3>
+            <p className="text-sm themed-text leading-relaxed">
+              Adjust <b>Length Bias</b> to favor longer continuous breaks. Click <b>OPTIMIZE</b> to let the algorithm find the most efficient way to use your remaining budget.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="text-sm font-black uppercase tracking-widest text-pink-500 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-pink-500/10 flex items-center justify-center text-[10px]">5</span>
+              How it Works (Algorithm)
+            </h3>
+            <p className="text-sm themed-text leading-relaxed">
+              The optimizer uses <b>Dynamic Programming</b> to evaluate millions of combinations. It calculates a "Utility" score for every possible date and budget state, prioritizing blocks of time off that are "anchored" by existing holidays or sick days.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="text-sm font-black uppercase tracking-widest text-yellow-600 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-yellow-500/10 flex items-center justify-center text-[10px]">6</span>
+              The DP Debug Grid
+            </h3>
+            <p className="text-sm themed-text leading-relaxed">
+              Switch to <b>DEBUG DP GRID</b> to see the internal "Utility Heatmap". Bright areas show high-value states where your budget yields the most time off. The arrows show the exact decisions the algorithm made at each step to reach the optimal solution.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="text-sm font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-emerald-500/10 flex items-center justify-center text-[10px]">7</span>
+              Multiple Solutions
+            </h3>
+            <p className="text-sm themed-text leading-relaxed">
+              If the optimizer finds multiple strategies with the same optimal score, a <b>Solution Selector</b> will appear at the bottom. Click through the numbered buttons to explore different ways to use your leave budget.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="text-sm font-black uppercase tracking-widest text-gray-500 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-gray-500/10 flex items-center justify-center text-[10px]">8</span>
+              Export
+            </h3>
+            <p className="text-sm themed-text leading-relaxed">
+              Once happy with the plan, use <b>Print Plan</b> to generate a beautiful, A4-formatted PDF of your strategy.
+            </p>
+          </section>
+        </div>
+
+        <button 
+          onClick={onClose}
+          className="w-full bg-gray-900 dark:bg-white text-white dark:text-black py-4 rounded-2xl font-black hover:opacity-90 transition-all shadow-lg active:scale-[0.98] uppercase tracking-widest text-xs"
+        >
+          Got it!
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const PowerSlider = ({ label, value, onChange, colorClass, id }) => (
   <div className="space-y-1.5">
     <div className="flex justify-between items-center">
@@ -349,6 +467,7 @@ function App() {
   const [calDates, setCalDates] = useState([]);
   const [choices, setChoices] = useState(null);
   const [showDebug, setShowDebug] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
     return saved === 'true' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -529,6 +648,13 @@ function App() {
           <h1 className="text-3xl font-black tracking-tight flex items-center"><TodayIcon /> Leave Optimizer</h1>
           <div className="flex items-center gap-3">
             <button 
+              onClick={() => setShowInstructions(true)} 
+              className="p-2.5 rounded-xl themed-card border-2 hover:border-blue-500 transition-all shadow-sm active:scale-95 text-blue-500"
+              title="How to use"
+            >
+              <HelpIcon />
+            </button>
+            <button 
               onClick={() => setDarkMode(prev => !prev)} 
               className="p-2.5 rounded-xl themed-card border-2 hover:border-blue-500 transition-all shadow-sm active:scale-95"
               title="Toggle Dark Mode"
@@ -681,6 +807,7 @@ function App() {
 
         </div>
       </div>
+      <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} />
     </div>
   );
 }
