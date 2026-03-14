@@ -159,23 +159,40 @@ const DPGridView = ({ grid, dates, choices }) => {
   // Track the actual chosen path from the currently selected strategy
   const optimalPath = useMemo(() => {
     const path = new Set();
-    if (!plannedStrategy || plannedStrategy.length === 0) return path;
+    if (!plannedStrategy || plannedStrategy.length === 0 || !dates) return path;
     
     // The path consists of (day_index, budget_remaining)
-    let curr_b = B;
     const dateToIndex = dates.reduce((acc, d, i) => { acc[d] = i; return acc; }, {});
     
-    // Initial state
-    path.add(`0-${B}`);
-    
     let currentBudget = B;
+    let currentDayIdx = 0;
+    
+    // Start at the beginning
+    path.add(`${currentDayIdx}-${currentBudget}`);
+
     plannedStrategy.forEach(block => {
       const startIdx = dateToIndex[block.start_date];
-      // All days from previous block end up to this block start are "Stay" decisions
-      // But we can simplify: just highlight the state at the start of each block
-      path.add(`${startIdx}-${currentBudget}`);
+      const endIdx = dateToIndex[block.end_date];
+      
+      // All states from previous position to block start are "Stay"
+      for (let i = currentDayIdx; i <= startIdx; i++) {
+        path.add(`${i}-${currentBudget}`);
+      }
+      
+      // After this block is taken
       currentBudget -= block.leave_spent;
+      currentDayIdx = endIdx + 1;
+      
+      // State after the block
+      if (currentDayIdx < dates.length) {
+        path.add(`${currentDayIdx}-${currentBudget}`);
+      }
     });
+
+    // Final stretch after last block
+    for (let i = currentDayIdx; i < dates.length; i++) {
+      path.add(`${i}-${currentBudget}`);
+    }
     
     return path;
   }, [plannedStrategy, dates, B]);
@@ -218,12 +235,15 @@ const DPGridView = ({ grid, dates, choices }) => {
                   const textColor = intensity > 0.6 ? 'white' : 'inherit';
                   
                   const isOptimal = optimalPath.has(`${i}-${b}`);
-                  const choice = choices && choices[i] && choices[i][b];
+                  const cellChoices = choices && choices[i] && choices[i][b];
+                  
+                  const hasStay = Array.isArray(cellChoices) && cellChoices.some(c => c[2] === null);
+                  const hasLeave = Array.isArray(cellChoices) && cellChoices.some(c => c[2] !== null);
+                  
                   let arrow = "";
-                  if (choice) {
-                    const [next_i, cost, block] = choice;
-                    arrow = block ? "↗" : "↑";
-                  }
+                  if (hasStay && hasLeave) arrow = "↑↗";
+                  else if (hasStay) arrow = "↑";
+                  else if (hasLeave) arrow = "↗";
 
                   return (
                     <td 
@@ -232,7 +252,7 @@ const DPGridView = ({ grid, dates, choices }) => {
                       className={`p-2 border dark:border-gray-700 transition-colors duration-300 relative ${val === -1 ? 'text-gray-100 dark:text-gray-800' : ''} ${isOptimal ? 'ring-2 ring-yellow-400 ring-inset z-10' : ''}`}
                     >
                       <div className="flex flex-col items-center justify-center text-center leading-none">
-                        <span className="text-[9px] font-black mb-0.5">{arrow}</span>
+                        <span className="text-[9px] font-black mb-0.5 tracking-tighter">{arrow}</span>
                         <span className="w-full">{val === -1 ? '-' : val.toFixed(1)}</span>
                       </div>
                     </td>
