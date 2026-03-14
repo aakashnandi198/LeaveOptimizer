@@ -146,7 +146,7 @@ const PowerSlider = ({ label, value, onChange, colorClass, id }) => (
   </div>
 );
 
-const DPGridView = ({ grid, dates }) => {
+const DPGridView = ({ grid, dates, choices }) => {
   if (!grid || !dates) return <div className="p-8 text-center text-gray-400">Run optimization to see DP grid.</div>;
   const B = grid[0].length - 1;
   
@@ -155,6 +155,22 @@ const DPGridView = ({ grid, dates }) => {
     grid.forEach(row => row.forEach(val => { if (val > max) max = val; }));
     return max || 1;
   }, [grid]);
+
+  // Track the actual chosen path to highlight it
+  const optimalPath = useMemo(() => {
+    const path = new Set();
+    if (!choices) return path;
+    let curr_i = 0;
+    let curr_b = B;
+    const N = dates.length;
+    while (curr_i < N && choices[curr_i] && choices[curr_i][curr_b]) {
+      path.add(`${curr_i}-${curr_b}`);
+      const [next_i, cost, block] = choices[curr_i][curr_b];
+      curr_i = next_i;
+      curr_b -= cost;
+    }
+    return path;
+  }, [choices, dates, B]);
 
   return (
     <div className="themed-card rounded-3xl shadow-xl overflow-hidden border flex flex-col h-[80vh] transition-colors duration-300">
@@ -165,16 +181,12 @@ const DPGridView = ({ grid, dates }) => {
       
       <div className="p-4 bg-blue-50 dark:bg-blue-950/30 border-b border-blue-100 dark:border-blue-900 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <h4 className="text-[10px] font-black uppercase mb-1 dark:text-blue-400 text-blue-900">What is this?</h4>
-          <p className="text-[9px] text-blue-800 dark:text-blue-300 leading-tight">This grid visualizes the <b>Dynamic Programming (DP)</b> table used to find your optimal leave strategy. It calculates the maximum possible "Utility Score" from any given date until the end of the year.</p>
+          <h4 className="text-[10px] font-black uppercase mb-1 dark:text-blue-400 text-blue-900">Optimal Path Legend</h4>
+          <p className="text-[9px] text-blue-800 dark:text-blue-300 leading-tight"><b>↓ Stay:</b> Move to next day (cost 0).<br/><b>↘ Leave:</b> Spend budget for a bridge.</p>
         </div>
-        <div>
-          <h4 className="text-[10px] font-black uppercase mb-1 dark:text-blue-400 text-blue-900">The Axes</h4>
-          <p className="text-[9px] text-blue-800 dark:text-blue-300 leading-tight"><b>Rows (Y):</b> Every day from today to Dec 31st.<br/><b>Cols (X):</b> Your remaining leave budget (from 0 to your total budget).</p>
-        </div>
-        <div>
+        <div className="md:col-span-2">
           <h4 className="text-[10px] font-black uppercase mb-1 dark:text-blue-400 text-blue-900">The Heatmap</h4>
-          <p className="text-[9px] text-blue-800 dark:text-blue-300 leading-tight">Darker green cells represent "high-value" states. A high score means that having that much budget at that specific date is very efficient for creating long bridges.</p>
+          <p className="text-[9px] text-blue-800 dark:text-blue-300 leading-tight">Cells with <span className="ring-2 ring-yellow-400 px-1 rounded-sm mx-1">Yellow Rings</span> indicate the specific decisions the algorithm took to generate your current plan.</p>
         </div>
       </div>
 
@@ -184,7 +196,7 @@ const DPGridView = ({ grid, dates }) => {
             <tr>
               <th className="p-2 border dark:border-gray-700 bg-gray-200 dark:bg-gray-800 w-24 sticky left-0 z-30">Date \ B</th>
               {Array.from({ length: B + 1 }, (_, b) => (
-                <th key={b} className="p-2 border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 w-12 text-[8px]">{b}</th>
+                <th key={b} className="p-2 border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 w-12 text-[8px] text-center">{b}</th>
               ))}
             </tr>
           </thead>
@@ -194,17 +206,27 @@ const DPGridView = ({ grid, dates }) => {
                 <td className="p-2 border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 font-bold sticky left-0 z-10 text-[8px] whitespace-nowrap themed-text">{date}</td>
                 {grid[i].map((val, b) => {
                   const intensity = val > 0 ? (val / maxVal) : 0;
-                  // Using green-500 (rgb 34 197 94) as base
                   const backgroundColor = val > 0 ? `rgba(34, 197, 94, ${0.1 + intensity * 0.8})` : 'transparent';
                   const textColor = intensity > 0.6 ? 'white' : 'inherit';
                   
+                  const isOptimal = optimalPath.has(`${i}-${b}`);
+                  const choice = choices && choices[i] && choices[i][b];
+                  let arrow = "";
+                  if (choice) {
+                    const [next_i, cost, block] = choice;
+                    arrow = block ? "↘" : "↓";
+                  }
+
                   return (
                     <td 
                       key={b} 
                       style={{ backgroundColor, color: textColor }}
-                      className={`p-2 border dark:border-gray-700 text-right transition-colors duration-300 ${val === -1 ? 'text-gray-100 dark:text-gray-800' : ''}`}
+                      className={`p-2 border dark:border-gray-700 text-center transition-colors duration-300 relative ${val === -1 ? 'text-gray-100 dark:text-gray-800' : ''} ${isOptimal ? 'ring-2 ring-yellow-400 ring-inset z-10' : ''}`}
                     >
-                      {val === -1 ? '-' : val.toFixed(1)}
+                      <div className="flex flex-col items-center leading-none">
+                        <span className="text-[7px] font-black opacity-40 mb-0.5">{arrow}</span>
+                        <span>{val === -1 ? '-' : val.toFixed(1)}</span>
+                      </div>
                     </td>
                   );
                 })}
@@ -239,6 +261,7 @@ function App() {
   const [plannedStrategy, setPlannedStrategy] = useState([]);
   const [dpGrid, setDpGrid] = useState(null);
   const [calDates, setCalDates] = useState([]);
+  const [choices, setChoices] = useState(null);
   const [showDebug, setShowDebug] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
@@ -336,6 +359,7 @@ function App() {
       setPlannedStrategy(response.data.strategy);
       setDpGrid(response.data.dp_grid);
       setCalDates(response.data.calendar);
+      setChoices(response.data.choices);
     } catch (error) { console.error(error); } finally { setLoading(false); }
   };
 

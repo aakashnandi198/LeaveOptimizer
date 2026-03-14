@@ -182,6 +182,7 @@ async def optimize_leaves(req: OptimizeRequest):
         return {
             "strategy": strategy,
             "dp_grid": dp,
+            "choices": choice,
             "calendar": [c["date"] for c in calendar]
         }
     except Exception as e:
