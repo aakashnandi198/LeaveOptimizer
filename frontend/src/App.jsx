@@ -754,7 +754,18 @@ function App() {
             </div>
           </div>
 
-          <div className="flex-1 w-full space-y-8">
+          <div className="flex-1 w-full space-y-8 relative">
+            {loading && (
+              <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-sm rounded-3xl transition-all duration-300">
+                <div className="flex flex-col items-center gap-4 p-8 themed-card rounded-3xl shadow-2xl border-2 border-blue-500 animate-in fade-in zoom-in duration-300">
+                  <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="flex flex-col items-center gap-1">
+                    <p className="text-sm font-black uppercase tracking-widest text-blue-600 dark:text-blue-400">Optimizing</p>
+                    <p className="text-[10px] font-black themed-text-muted uppercase tracking-widest opacity-60">Evaluating millions of paths...</p>
+                  </div>
+                </div>
+              </div>
+            )}
             {!showDebug ? (
               <>
                 <div className="flex flex-wrap gap-4 mb-2 text-[8px] font-black uppercase tracking-widest print:mb-6 justify-center lg:justify-start themed-text-muted">
