@@ -199,7 +199,7 @@ const InstructionsModal = ({ isOpen, onClose }) => {
               How it Works (Algorithm)
             </h3>
             <p className="text-sm themed-text leading-relaxed">
-              The optimizer uses <b>Dynamic Programming</b> to evaluate millions of combinations. It calculates a "Utility" score for every possible date and budget state, prioritizing blocks of time off that are "anchored" by existing holidays or sick days.
+              The optimizer uses <b>Dynamic Programming</b> to evaluate millions of combinations. It calculates a "Utility" score for every possible date and budget state, prioritizing blocks of time off that are "anchored" by existing holidays or sick days. <b>Note:</b> Optimization only considers <b>current and future dates</b>; past days are ignored to ensure your plan is actionable.
             </p>
           </section>
 
