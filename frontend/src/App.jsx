@@ -156,21 +156,29 @@ const DPGridView = ({ grid, dates, choices }) => {
     return max || 1;
   }, [grid]);
 
-  // Track the actual chosen path to highlight it
+  // Track the actual chosen path from the currently selected strategy
   const optimalPath = useMemo(() => {
     const path = new Set();
-    if (!choices) return path;
-    let curr_i = 0;
+    if (!plannedStrategy || plannedStrategy.length === 0) return path;
+    
+    // The path consists of (day_index, budget_remaining)
     let curr_b = B;
-    const N = dates.length;
-    while (curr_i < N && choices[curr_i] && choices[curr_i][curr_b]) {
-      path.add(`${curr_i}-${curr_b}`);
-      const [next_i, cost, block] = choices[curr_i][curr_b];
-      curr_i = next_i;
-      curr_b -= cost;
-    }
+    const dateToIndex = dates.reduce((acc, d, i) => { acc[d] = i; return acc; }, {});
+    
+    // Initial state
+    path.add(`0-${B}`);
+    
+    let currentBudget = B;
+    plannedStrategy.forEach(block => {
+      const startIdx = dateToIndex[block.start_date];
+      // All days from previous block end up to this block start are "Stay" decisions
+      // But we can simplify: just highlight the state at the start of each block
+      path.add(`${startIdx}-${currentBudget}`);
+      currentBudget -= block.leave_spent;
+    });
+    
     return path;
-  }, [choices, dates, B]);
+  }, [plannedStrategy, dates, B]);
 
   return (
     <div className="themed-card rounded-3xl shadow-xl overflow-hidden border flex flex-col h-[80vh] transition-colors duration-300">
@@ -259,6 +267,8 @@ function App() {
   const [holidays, setHolidays] = useState([]);
   const [loading, setLoading] = useState(false);
   const [plannedStrategy, setPlannedStrategy] = useState([]);
+  const [allStrategies, setAllStrategies] = useState([]);
+  const [selectedStrategyIndex, setSelectedStrategyIndex] = useState(0);
   const [dpGrid, setDpGrid] = useState(null);
   const [calDates, setCalDates] = useState([]);
   const [choices, setChoices] = useState(null);
@@ -356,12 +366,23 @@ function App() {
         removed_public_holidays: removedHolidays,
         numerator_power: numPower, denominator_power: denPower
       });
-      setPlannedStrategy(response.data.strategy);
+      const strats = response.data.strategies || [];
+      setAllStrategies(strats);
+      setSelectedStrategyIndex(0);
+      setPlannedStrategy(strats.length > 0 ? strats[0] : []);
       setDpGrid(response.data.dp_grid);
       setCalDates(response.data.calendar);
       setChoices(response.data.choices);
     } catch (error) { console.error(error); } finally { setLoading(false); }
   };
+
+  useEffect(() => {
+    if (allStrategies.length > 0) {
+      setPlannedStrategy(allStrategies[selectedStrategyIndex]);
+    } else {
+      setPlannedStrategy([]);
+    }
+  }, [selectedStrategyIndex, allStrategies]);
 
   const { allLeaveDates, totalDaysOff, overallEfficiency } = useMemo(() => {
     const suggestedLeaves = new Set();
@@ -553,9 +574,25 @@ function App() {
 
               </>
             ) : (
-              <DPGridView grid={dpGrid} dates={calDates} choices={choices} />
+              <DPGridView grid={dpGrid} dates={calDates} choices={choices} plannedStrategy={plannedStrategy} />
             )}
           </div>
+
+          {/* Multiple Solutions Selector */}
+          {allStrategies.length > 1 && (
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-2 themed-card p-2 rounded-2xl shadow-2xl border-2 border-blue-500 z-50 animate-bounce-subtle print:hidden">
+              <span className="text-[9px] font-black uppercase self-center px-3 themed-text-muted">Solutions:</span>
+              {allStrategies.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedStrategyIndex(idx)}
+                  className={`w-8 h-8 rounded-xl font-black text-xs transition-all ${selectedStrategyIndex === idx ? 'bg-blue-600 text-white shadow-lg scale-110' : 'bg-gray-100 dark:bg-gray-800 themed-text hover:bg-gray-200'}`}
+                >
+                  {idx + 1}
+                </button>
+              ))}
+            </div>
+          )}
 
         </div>
       </div>

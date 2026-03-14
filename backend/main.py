@@ -126,15 +126,18 @@ async def optimize_leaves(req: OptimizeRequest):
         N = len(calendar)
         B = total_budget
         dp = [[-1.0] * (B + 1) for _ in range(N + 1)]
-        choice = [[None] * (B + 1) for _ in range(N + 1)]
+        choices_table = [[[] for _ in range(B + 1)] for _ in range(N + 1)]
         for b in range(B + 1): dp[N][b] = 0.0
             
         for i in range(N - 1, -1, -1):
             for b in range(B + 1):
+                # Option 1: Stay (No Leave)
                 dp[i][b] = dp[i+1][b]
-                choice[i][b] = (i + 1, 0, None)
+                choices_table[i][b] = [(i + 1, 0, None)]
+                
                 if calendar[i]["is_off"]: continue
                 
+                # Option 2: Take a Leave Block
                 workdays_found = 0
                 for j in range(i, N):
                     if not calendar[j]["is_off"]: workdays_found += 1
@@ -145,44 +148,57 @@ async def optimize_leaves(req: OptimizeRequest):
                         actual_end = j
                         while actual_end < N - 1 and calendar[actual_end+1]["is_off"]: actual_end += 1
                         
-                        # Check if block contains at least one anchor (holiday or sick day)
                         has_anchor = any(calendar[k]["is_anchor"] for k in range(actual_start, actual_end + 1))
                         if not has_anchor: continue
                             
                         length = actual_end - actual_start + 1
                         cost = workdays_found
                         
-                        # Power-based Scoring: Transitions from efficiency to total consolidation
-                        # Score = (Efficiency) + (Length ^ (1 + Bias/5))
-                        # This ensures that at Bias=5 (power=2), f(L1+L2) > f(L1)+f(L2), forcing one big block.
                         efficiency_part = length / (cost + 1.0)
                         length_bonus = math.pow(length, 1.0 + (req.numerator_power / 5.0))
                         score = efficiency_part + length_bonus
                         
                         next_i = actual_end + 1
                         total_score = score + dp[next_i][b - cost]
-                        if total_score > dp[i][b]:
+                        
+                        if total_score > dp[i][b] + 1e-9:
                             dp[i][b] = total_score
-                            choice[i][b] = (next_i, cost, {
+                            choices_table[i][b] = [(next_i, cost, {
                                 "max_days": length,
                                 "leave_dates": [calendar[k]["date"] for k in range(i, j+1) if not calendar[k]["is_off"]],
                                 "leave_spent": cost,
                                 "start_date": calendar[actual_start]["date"],
                                 "end_date": calendar[actual_end]["date"],
                                 "efficiency": round(length / (cost + 0.1), 2)
-                            })
+                            })]
+                        elif abs(total_score - dp[i][b]) < 1e-9:
+                            choices_table[i][b].append((next_i, cost, {
+                                "max_days": length,
+                                "leave_dates": [calendar[k]["date"] for k in range(i, j+1) if not calendar[k]["is_off"]],
+                                "leave_spent": cost,
+                                "start_date": calendar[actual_start]["date"],
+                                "end_date": calendar[actual_end]["date"],
+                                "efficiency": round(length / (cost + 0.1), 2)
+                            }))
 
-        strategy = []
-        curr_i, curr_b = 0, B
-        while curr_i < N and choice[curr_i][curr_b]:
-            next_i, cost, block = choice[curr_i][curr_b]
-            if block: strategy.append(block)
-            curr_i, curr_b = next_i, curr_b - cost
+        all_strategies = []
+        def reconstruct(idx, budget, current_strategy):
+            if len(all_strategies) >= 10: return
+            if idx >= N:
+                all_strategies.append(current_strategy)
+                return
+            
+            for next_i, cost, block in choices_table[idx][budget]:
+                new_strat = list(current_strategy)
+                if block: new_strat.append(block)
+                reconstruct(next_i, budget - cost, new_strat)
+
+        reconstruct(0, B, [])
             
         return {
-            "strategy": strategy,
+            "strategies": all_strategies,
             "dp_grid": dp,
-            "choices": choice,
+            "choices": choices_table,
             "calendar": [c["date"] for c in calendar]
         }
     except Exception as e:
