@@ -484,16 +484,19 @@ function App() {
 
   useEffect(() => {
     const fetchCountries = async () => {
+      setLoading(true);
       try {
         const response = await axios.get('http://localhost:8000/countries');
         setCountries(response.data);
       } catch (error) { console.error(error); }
+      finally { setLoading(false); }
     };
     fetchCountries();
   }, []);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const [provRes, holRes] = await Promise.all([
           axios.get(`http://localhost:8000/provinces/${year}/${country}`),
@@ -502,13 +505,17 @@ function App() {
         setProvinces(provRes.data);
         setHolidays(holRes.data);
       } catch (error) { console.error("Data fetch error", error); }
+      finally { setLoading(false); }
     };
     if (country) fetchData();
   }, [country, year, selectedProvince]);
 
   useEffect(() => {
     if (allStrategies.length > 0) {
-      handleOptimize();
+      const timer = setTimeout(() => {
+        handleOptimize();
+      }, 300); // Debounce slider changes
+      return () => clearTimeout(timer);
     }
   }, [numPower, denPower]);
 
