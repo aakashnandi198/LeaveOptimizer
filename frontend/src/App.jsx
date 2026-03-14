@@ -377,6 +377,7 @@ function App() {
   };
 
   useEffect(() => {
+    console.log("Selected Strategy Index Changed:", selectedStrategyIndex);
     if (allStrategies.length > 0) {
       setPlannedStrategy(allStrategies[selectedStrategyIndex]);
     } else {
@@ -385,10 +386,12 @@ function App() {
   }, [selectedStrategyIndex, allStrategies]);
 
   const { allLeaveDates, totalDaysOff, overallEfficiency } = useMemo(() => {
+    console.log("Calculating allLeaveDates for plannedStrategy:", plannedStrategy);
     const suggestedLeaves = new Set();
     if (Array.isArray(plannedStrategy)) {
       plannedStrategy.forEach(p => p.leave_dates.forEach(d => suggestedLeaves.add(d)));
     }
+    console.log("Found suggestedLeaves count:", suggestedLeaves.size);
     const manualLeaves = new Set(manualPaidDays);
     const sickDays = new Set(manualSickDays);
     const holidayDates = new Set([
