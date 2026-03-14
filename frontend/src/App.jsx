@@ -457,14 +457,14 @@ function App() {
                           <div>Cost + 1</div>
                         </div>
                         <span className="text-blue-400">+</span>
-                        <div className="flex items-center gap-1">
-                          <span className="text-blue-300">{numPower.toFixed(1)}</span>
-                          <span className="text-[8px] opacity-60">× log₂(L)</span>
+                        <div className="flex items-center gap-0.5">
+                          <span>L</span>
+                          <span className="text-[10px] text-blue-300"><sup>{(1 + numPower/5).toFixed(1)}</sup></span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <p className="text-[7px] leading-relaxed opacity-50 text-center font-black uppercase tracking-widest">Score = Efficiency + Length Bonus</p>
+                  <p className="text-[7px] leading-relaxed opacity-50 text-center font-black uppercase tracking-widest">Score = Efficiency + Power Bonus</p>
                 </div>
               </div>
 

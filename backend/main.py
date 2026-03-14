@@ -152,10 +152,11 @@ async def optimize_leaves(req: OptimizeRequest):
                         length = actual_end - actual_start + 1
                         cost = workdays_found
                         
-                        # Log-Additive Scoring: Balance efficiency with a subtle length bonus
-                        # Score = (Efficiency) + (Bias * log2(Length))
+                        # Power-based Scoring: Transitions from efficiency to total consolidation
+                        # Score = (Efficiency) + (Length ^ (1 + Bias/5))
+                        # This ensures that at Bias=5 (power=2), f(L1+L2) > f(L1)+f(L2), forcing one big block.
                         efficiency_part = length / (cost + 1.0)
-                        length_bonus = req.numerator_power * math.log2(length)
+                        length_bonus = math.pow(length, 1.0 + (req.numerator_power / 5.0))
                         score = efficiency_part + length_bonus
                         
                         next_i = actual_end + 1

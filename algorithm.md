@@ -36,16 +36,19 @@ To ensure high-value bridges, a **validity filter** is applied to every potentia
 
 ## 5. The Scoring Formula (Utility)
 
-The "value" of a valid block is determined by a **Log-Additive** formula that balances raw efficiency with a subtle bonus for longer breaks:
+The "value" of a valid block is determined by a **Power-based** formula that allows for a full range of behaviors, from raw efficiency to total consolidation:
 
-$$Score = \frac{L}{C + 1} + (P \times \log_2(L))$$
+$$Score = \frac{L}{C + 1} + L^{(1 + P/5)}$$
 
-- **$L$ (Length of Bridge):** The total consecutive days off (including the weekends/holidays bridged).
+- **$L$ (Length of Bridge):** The total consecutive days off.
 - **$C$ (Paid Days Spent):** The actual cost to your leave budget.
-- **$P$ (Length Bias):** A user-controlled multiplier (default 1.0). 
+- **$P$ (Length Bias):** A user-controlled slider (0 to 5).
 
-### Why Log-Additive?
-Unlike exponential scoring, this formula has **diminishing returns** for extremely long blocks. The logarithmic term ($\log_2$) ensures that adding more days to a block provides a helpful bonus but won't "explode" the score. This forces the algorithm to prioritize high-efficiency "Smart Bridges" (e.g., spending 1 day to get 4-5 days off) multiple times throughout the year, rather than dumping the entire budget into one massive, inefficient vacation.
+### The Progression
+The power term $(1 + P/5)$ is key to the "Full Range" behavior:
+- **At $P = 0$ (Linear):** The length bonus is just $L^1$. The algorithm prioritizes efficiency but gives a fair weight to block length.
+- **At $P = 5$ (Convex):** The length bonus becomes $L^2$. Mathematically, a convex function prefers one large value over several small values (e.g., $10^2 > 5^2 + 5^2$). This forces the algorithm to consolidate your entire budget into the single longest possible contiguous block.
+- **Middle Values:** Provide a smooth transition between "Smart Bridging" and "The Big Vacation."
 
 ## 6. Backward Induction
 
