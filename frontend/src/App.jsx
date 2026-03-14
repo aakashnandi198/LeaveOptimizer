@@ -388,7 +388,7 @@ function App() {
   }, [country, year, selectedProvince]);
 
   useEffect(() => {
-    if (plannedStrategy.length > 0) {
+    if (allStrategies.length > 0) {
       handleOptimize();
     }
   }, [numPower, denPower]);
