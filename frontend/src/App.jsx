@@ -344,6 +344,7 @@ function App() {
   const [plannedStrategy, setPlannedStrategy] = useState([]);
   const [allStrategies, setAllStrategies] = useState([]);
   const [selectedStrategyIndex, setSelectedStrategyIndex] = useState(-1);
+  const [maxScore, setMaxScore] = useState(0);
   const [dpGrid, setDpGrid] = useState(null);
   const [calDates, setCalDates] = useState([]);
   const [choices, setChoices] = useState(null);
@@ -443,6 +444,7 @@ function App() {
       });
       const strats = response.data.strategies || [];
       setAllStrategies(strats);
+      setMaxScore(response.data.max_score || 0);
       setDpGrid(response.data.dp_grid);
       setCalDates(response.data.calendar);
       setChoices(response.data.choices);
@@ -660,7 +662,11 @@ function App() {
           {/* Multiple Solutions Selector */}
           {allStrategies.length > 1 && (
             <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-2 themed-card p-2 rounded-2xl shadow-2xl border-2 border-blue-500 z-50 animate-bounce-subtle print:hidden">
-              <span className="text-[9px] font-black uppercase self-center px-3 themed-text-muted">Solutions:</span>
+              <div className="flex flex-col justify-center px-3 border-r border-gray-100 dark:border-gray-800">
+                <span className="text-[9px] font-black uppercase themed-text-muted leading-none">Optimal Score</span>
+                <span className="text-[10px] font-black text-blue-600 dark:text-blue-400">{maxScore}</span>
+              </div>
+              <span className="text-[9px] font-black uppercase self-center px-2 themed-text-muted">Solutions:</span>
               {allStrategies.map((_, idx) => (
                 <button
                   key={idx}

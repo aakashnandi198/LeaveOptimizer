@@ -182,10 +182,20 @@ async def optimize_leaves(req: OptimizeRequest):
                             }))
 
         all_strategies = []
+        seen_strategies = set()
+
         def reconstruct(idx, budget, current_strategy):
             if len(all_strategies) >= 10: return
             if idx >= N:
-                all_strategies.append(current_strategy)
+                # Create a unique key based on sorted leave dates to avoid duplicates
+                all_dates = []
+                for b in current_strategy:
+                    all_dates.extend(b["leave_dates"])
+                strat_key = ",".join(sorted(all_dates))
+                
+                if strat_key not in seen_strategies:
+                    all_strategies.append(current_strategy)
+                    seen_strategies.add(strat_key)
                 return
             
             for next_i, cost, block in choices_table[idx][budget]:
@@ -197,6 +207,7 @@ async def optimize_leaves(req: OptimizeRequest):
             
         return {
             "strategies": all_strategies,
+            "max_score": round(dp[0][B], 2),
             "dp_grid": dp,
             "choices": choices_table,
             "calendar": [c["date"] for c in calendar]
