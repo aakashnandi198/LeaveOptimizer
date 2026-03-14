@@ -146,23 +146,59 @@ const PowerSlider = ({ label, value, onChange, colorClass, id }) => (
   </div>
 );
 
-const DPGridView = ({ grid, dates, choices }) => {
-  if (!grid || !dates) return <div className="p-8 text-center text-gray-400">Run optimization to see DP grid.</div>;
-  const B = grid[0].length - 1;
+const DPGridView = ({ grid, dates, choices, plannedStrategy }) => {
+  // 1. Extreme validation of inputs
+  const isValid = useMemo(() => {
+    try {
+      if (!grid || !Array.isArray(grid) || grid.length === 0) return false;
+      if (!grid[0] || !Array.isArray(grid[0])) return false;
+      if (!dates || !Array.isArray(dates) || dates.length === 0) return false;
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }, [grid, dates]);
+
+  if (!isValid) {
+    return (
+      <div className="p-8 text-center themed-card rounded-3xl border m-4">
+        <p className="text-gray-400 font-black uppercase tracking-widest text-[10px]">
+          No valid DP data available. Run optimization first.
+        </p>
+      </div>
+    );
+  }
+
+  // 4. Safe derivation of B
+  const B = Math.max(0, (grid[0]?.length || 1) - 1);
   
+  // 2. Wrap useMemo calculations in try-catches
   const maxVal = useMemo(() => {
-    let max = 0;
-    grid.forEach(row => row.forEach(val => { if (val > max) max = val; }));
-    return max || 1;
+    try {
+      let max = 0;
+      grid.forEach(row => {
+        if (Array.isArray(row)) {
+          row.forEach(val => { if (typeof val === 'number' && val > max) max = val; });
+        }
+      });
+      return max || 1;
+    } catch (err) {
+      console.error("maxVal calculation error:", err);
+      return 1;
+    }
   }, [grid]);
 
   // Track the actual chosen path from the currently selected strategy
   const optimalPath = useMemo(() => {
     try {
       const path = new Set();
-      if (!plannedStrategy || plannedStrategy.length === 0 || !dates) return path;
+      // 5. Check if plannedStrategy is valid
+      if (!plannedStrategy || !Array.isArray(plannedStrategy) || plannedStrategy.length === 0 || !dates) return path;
       
-      const dateToIndex = dates.reduce((acc, d, i) => { acc[d] = i; return acc; }, {});
+      const dateToIndex = dates.reduce((acc, d, i) => { 
+        if (d) acc[d] = i; 
+        return acc; 
+      }, {});
       
       let currentBudget = B;
       let currentDayIdx = 0;
@@ -170,6 +206,8 @@ const DPGridView = ({ grid, dates, choices }) => {
       path.add(`${currentDayIdx}-${currentBudget}`);
 
       plannedStrategy.forEach(block => {
+        if (!block || typeof block !== 'object') return;
+        
         const startIdx = dateToIndex[block.start_date];
         const endIdx = dateToIndex[block.end_date];
         
@@ -179,7 +217,7 @@ const DPGridView = ({ grid, dates, choices }) => {
           path.add(`${i}-${currentBudget}`);
         }
         
-        currentBudget -= block.leave_spent;
+        currentBudget -= (block.leave_spent || 0);
         currentDayIdx = Math.min(endIdx + 1, dates.length);
         
         if (currentDayIdx < dates.length) {
@@ -228,40 +266,49 @@ const DPGridView = ({ grid, dates, choices }) => {
               </tr>
             </thead>
             <tbody>
-              {dates.map((date, i) => (
-                <tr key={date}>
-                  <td className="p-2 border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 font-bold sticky left-0 z-10 text-[8px] whitespace-nowrap themed-text">{date}</td>
-                  {grid[i] && grid[i].map((val, b) => {
-                    const intensity = val > 0 ? (val / maxVal) : 0;
-                    const backgroundColor = val > 0 ? `rgba(34, 197, 94, ${0.1 + intensity * 0.8})` : 'transparent';
-                    const textColor = intensity > 0.6 ? 'white' : 'inherit';
-                    
-                    const isOptimal = optimalPath.has(`${i}-${b}`);
-                    const cellChoices = choices && choices[i] && choices[i][b];
-                    
-                    const hasStay = Array.isArray(cellChoices) && cellChoices.some(c => c[2] === null);
-                    const hasLeave = Array.isArray(cellChoices) && cellChoices.some(c => c[2] !== null);
-                    
-                    let arrow = "";
-                    if (hasStay && hasLeave) arrow = "↑↗";
-                    else if (hasStay) arrow = "↑";
-                    else if (hasLeave) arrow = "↗";
+              {/* 3. Defensive table rendering */}
+              {dates.map((date, i) => {
+                const row = grid[i];
+                if (!row) return null;
 
-                    return (
-                      <td 
-                        key={b} 
-                        style={{ backgroundColor, color: textColor }}
-                        className={`p-2 border dark:border-gray-700 transition-colors duration-300 relative ${val === -1 ? 'text-gray-100 dark:text-gray-800' : ''} ${isOptimal ? 'ring-2 ring-yellow-400 ring-inset z-10' : ''}`}
-                      >
-                        <div className="flex flex-col items-center justify-center text-center leading-none">
-                          <span className="text-[9px] font-black mb-0.5 tracking-tighter">{arrow}</span>
-                          <span className="w-full">{val === -1 ? '-' : val.toFixed(1)}</span>
-                        </div>
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
+                return (
+                  <tr key={date || i}>
+                    <td className="p-2 border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 font-bold sticky left-0 z-10 text-[8px] whitespace-nowrap themed-text">{date}</td>
+                    {Array.from({ length: B + 1 }, (_, b) => {
+                      const val = row[b];
+                      if (val === undefined) return <td key={b} className="p-2 border dark:border-gray-700" />;
+
+                      const intensity = val > 0 ? (val / maxVal) : 0;
+                      const backgroundColor = val > 0 ? `rgba(34, 197, 94, ${0.1 + intensity * 0.8})` : 'transparent';
+                      const textColor = intensity > 0.6 ? 'white' : 'inherit';
+                      
+                      const isOptimal = optimalPath.has(`${i}-${b}`);
+                      const cellChoices = choices?.[i]?.[b];
+                      
+                      const hasStay = Array.isArray(cellChoices) && cellChoices.some(c => c && c[2] === null);
+                      const hasLeave = Array.isArray(cellChoices) && cellChoices.some(c => c && c[2] !== null);
+                      
+                      let arrow = "";
+                      if (hasStay && hasLeave) arrow = "↑↗";
+                      else if (hasStay) arrow = "↑";
+                      else if (hasLeave) arrow = "↗";
+
+                      return (
+                        <td 
+                          key={b} 
+                          style={{ backgroundColor, color: textColor }}
+                          className={`p-2 border dark:border-gray-700 transition-colors duration-300 relative ${val === -1 ? 'text-gray-100 dark:text-gray-800' : ''} ${isOptimal ? 'ring-2 ring-yellow-400 ring-inset z-10' : ''}`}
+                        >
+                          <div className="flex flex-col items-center justify-center text-center leading-none">
+                            <span className="text-[9px] font-black mb-0.5 tracking-tighter">{arrow}</span>
+                            <span className="w-full">{val === -1 ? '-' : (typeof val === 'number' ? val.toFixed(1) : val)}</span>
+                          </div>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -407,7 +454,7 @@ function App() {
 
   useEffect(() => {
     console.log("Selected Strategy Index Changed:", selectedStrategyIndex);
-    if (allStrategies.length > 0) {
+    if (allStrategies && allStrategies.length > 0 && selectedStrategyIndex >= 0 && selectedStrategyIndex < allStrategies.length) {
       setPlannedStrategy(allStrategies[selectedStrategyIndex]);
     } else {
       setPlannedStrategy([]);
