@@ -182,7 +182,7 @@ const DPGridView = ({ grid, dates, choices }) => {
       <div className="p-4 bg-blue-50 dark:bg-blue-950/30 border-b border-blue-100 dark:border-blue-900 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <h4 className="text-[10px] font-black uppercase mb-1 dark:text-blue-400 text-blue-900">Optimal Path Legend</h4>
-          <p className="text-[9px] text-blue-800 dark:text-blue-300 leading-tight"><b>↓ Stay:</b> Move to next day (cost 0).<br/><b>↘ Leave:</b> Spend budget for a bridge.</p>
+          <p className="text-[9px] text-blue-800 dark:text-blue-300 leading-tight"><b>↑ Stay:</b> Choice for this state.<br/><b>↗ Leave:</b> Choice for this state.</p>
         </div>
         <div className="md:col-span-2">
           <h4 className="text-[10px] font-black uppercase mb-1 dark:text-blue-400 text-blue-900">The Heatmap</h4>
@@ -214,18 +214,18 @@ const DPGridView = ({ grid, dates, choices }) => {
                   let arrow = "";
                   if (choice) {
                     const [next_i, cost, block] = choice;
-                    arrow = block ? "↘" : "↓";
+                    arrow = block ? "↗" : "↑";
                   }
 
                   return (
                     <td 
                       key={b} 
                       style={{ backgroundColor, color: textColor }}
-                      className={`p-2 border dark:border-gray-700 text-center transition-colors duration-300 relative ${val === -1 ? 'text-gray-100 dark:text-gray-800' : ''} ${isOptimal ? 'ring-2 ring-yellow-400 ring-inset z-10' : ''}`}
+                      className={`p-2 border dark:border-gray-700 transition-colors duration-300 relative ${val === -1 ? 'text-gray-100 dark:text-gray-800' : ''} ${isOptimal ? 'ring-2 ring-yellow-400 ring-inset z-10' : ''}`}
                     >
-                      <div className="flex flex-col items-center leading-none">
+                      <div className="flex flex-col items-center justify-center text-center leading-none">
                         <span className="text-[9px] font-black mb-0.5">{arrow}</span>
-                        <span>{val === -1 ? '-' : val.toFixed(1)}</span>
+                        <span className="w-full">{val === -1 ? '-' : val.toFixed(1)}</span>
                       </div>
                     </td>
                   );
