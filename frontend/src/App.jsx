@@ -553,7 +553,7 @@ function App() {
 
               </>
             ) : (
-              <DPGridView grid={dpGrid} dates={calDates} />
+              <DPGridView grid={dpGrid} dates={calDates} choices={choices} />
             )}
           </div>
 
