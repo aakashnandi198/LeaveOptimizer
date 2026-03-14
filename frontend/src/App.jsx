@@ -198,74 +198,81 @@ const DPGridView = ({ grid, dates, choices }) => {
     }
   }, [plannedStrategy, dates, B]);
 
-  return (
-    <div className="themed-card rounded-3xl shadow-xl overflow-hidden border flex flex-col h-[80vh] transition-colors duration-300">
-      <div className="p-4 bg-gray-900 dark:bg-black text-white flex justify-between items-center">
-        <h3 className="text-[9px] font-black uppercase tracking-widest">Utility Heatmap (DP Grid)</h3>
-        <div className="text-[8px] font-black opacity-50 uppercase tracking-tighter text-gray-400">Higher intensity = Better value for budget</div>
-      </div>
-      
-      <div className="p-4 bg-blue-50 dark:bg-blue-950/30 border-b border-blue-100 dark:border-blue-900 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <h4 className="text-[10px] font-black uppercase mb-1 dark:text-blue-400 text-blue-900">Optimal Path Legend</h4>
-          <p className="text-[9px] text-blue-800 dark:text-blue-300 leading-tight"><b>↑ Stay:</b> Choice for this state.<br/><b>↗ Leave:</b> Choice for this state.</p>
+  try {
+    return (
+      <div className="themed-card rounded-3xl shadow-xl overflow-hidden border flex flex-col h-[80vh] transition-colors duration-300">
+        <div className="p-4 bg-gray-900 dark:bg-black text-white flex justify-between items-center">
+          <h3 className="text-[9px] font-black uppercase tracking-widest">Utility Heatmap (DP Grid)</h3>
+          <div className="text-[8px] font-black opacity-50 uppercase tracking-tighter text-gray-400">Higher intensity = Better value for budget</div>
         </div>
-        <div className="md:col-span-2">
-          <h4 className="text-[10px] font-black uppercase mb-1 dark:text-blue-400 text-blue-900">The Heatmap</h4>
-          <p className="text-[9px] text-blue-800 dark:text-blue-300 leading-tight">Cells with <span className="ring-2 ring-yellow-400 px-1 rounded-sm mx-1">Yellow Rings</span> indicate the specific decisions the algorithm took to generate your current plan.</p>
+        
+        <div className="p-4 bg-blue-50 dark:bg-blue-950/30 border-b border-blue-100 dark:border-blue-900 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <h4 className="text-[10px] font-black uppercase mb-1 dark:text-blue-400 text-blue-900">Optimal Path Legend</h4>
+            <p className="text-[9px] text-blue-800 dark:text-blue-300 leading-tight"><b>↑ Stay:</b> Choice for this state.<br/><b>↗ Leave:</b> Choice for this state.</p>
+          </div>
+          <div className="md:col-span-2">
+            <h4 className="text-[10px] font-black uppercase mb-1 dark:text-blue-400 text-blue-900">The Heatmap</h4>
+            <p className="text-[9px] text-blue-800 dark:text-blue-300 leading-tight">Cells with <span className="ring-2 ring-yellow-400 px-1 rounded-sm mx-1">Yellow Rings</span> indicate the specific decisions the algorithm took to generate your current plan.</p>
+          </div>
         </div>
-      </div>
 
-      <div className="flex-1 overflow-auto font-mono text-[9px]">
-        <table className="w-full border-collapse table-fixed">
-          <thead className="sticky top-0 bg-gray-100 dark:bg-gray-800 z-20">
-            <tr>
-              <th className="p-2 border dark:border-gray-700 bg-gray-200 dark:bg-gray-800 w-24 sticky left-0 z-30">Date \ B</th>
-              {Array.from({ length: B + 1 }, (_, b) => (
-                <th key={b} className="p-2 border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 w-12 text-[8px] text-center">{b}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {dates.map((date, i) => (
-              <tr key={date}>
-                <td className="p-2 border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 font-bold sticky left-0 z-10 text-[8px] whitespace-nowrap themed-text">{date}</td>
-                {grid[i].map((val, b) => {
-                  const intensity = val > 0 ? (val / maxVal) : 0;
-                  const backgroundColor = val > 0 ? `rgba(34, 197, 94, ${0.1 + intensity * 0.8})` : 'transparent';
-                  const textColor = intensity > 0.6 ? 'white' : 'inherit';
-                  
-                  const isOptimal = optimalPath.has(`${i}-${b}`);
-                  const cellChoices = choices && choices[i] && choices[i][b];
-                  
-                  const hasStay = Array.isArray(cellChoices) && cellChoices.some(c => c[2] === null);
-                  const hasLeave = Array.isArray(cellChoices) && cellChoices.some(c => c[2] !== null);
-                  
-                  let arrow = "";
-                  if (hasStay && hasLeave) arrow = "↑↗";
-                  else if (hasStay) arrow = "↑";
-                  else if (hasLeave) arrow = "↗";
-
-                  return (
-                    <td 
-                      key={b} 
-                      style={{ backgroundColor, color: textColor }}
-                      className={`p-2 border dark:border-gray-700 transition-colors duration-300 relative ${val === -1 ? 'text-gray-100 dark:text-gray-800' : ''} ${isOptimal ? 'ring-2 ring-yellow-400 ring-inset z-10' : ''}`}
-                    >
-                      <div className="flex flex-col items-center justify-center text-center leading-none">
-                        <span className="text-[9px] font-black mb-0.5 tracking-tighter">{arrow}</span>
-                        <span className="w-full">{val === -1 ? '-' : val.toFixed(1)}</span>
-                      </div>
-                    </td>
-                  );
-                })}
+        <div className="flex-1 overflow-auto font-mono text-[9px]">
+          <table className="w-full border-collapse table-fixed">
+            <thead className="sticky top-0 bg-gray-100 dark:bg-gray-800 z-20">
+              <tr>
+                <th className="p-2 border dark:border-gray-700 bg-gray-200 dark:bg-gray-800 w-24 sticky left-0 z-30">Date \ B</th>
+                {Array.from({ length: B + 1 }, (_, b) => (
+                  <th key={b} className="p-2 border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 w-12 text-[8px] text-center">{b}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {dates.map((date, i) => (
+                <tr key={date}>
+                  <td className="p-2 border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 font-bold sticky left-0 z-10 text-[8px] whitespace-nowrap themed-text">{date}</td>
+                  {grid[i] && grid[i].map((val, b) => {
+                    const intensity = val > 0 ? (val / maxVal) : 0;
+                    const backgroundColor = val > 0 ? `rgba(34, 197, 94, ${0.1 + intensity * 0.8})` : 'transparent';
+                    const textColor = intensity > 0.6 ? 'white' : 'inherit';
+                    
+                    const isOptimal = optimalPath.has(`${i}-${b}`);
+                    const cellChoices = choices && choices[i] && choices[i][b];
+                    
+                    const hasStay = Array.isArray(cellChoices) && cellChoices.some(c => c[2] === null);
+                    const hasLeave = Array.isArray(cellChoices) && cellChoices.some(c => c[2] !== null);
+                    
+                    let arrow = "";
+                    if (hasStay && hasLeave) arrow = "↑↗";
+                    else if (hasStay) arrow = "↑";
+                    else if (hasLeave) arrow = "↗";
+
+                    return (
+                      <td 
+                        key={b} 
+                        style={{ backgroundColor, color: textColor }}
+                        className={`p-2 border dark:border-gray-700 transition-colors duration-300 relative ${val === -1 ? 'text-gray-100 dark:text-gray-800' : ''} ${isOptimal ? 'ring-2 ring-yellow-400 ring-inset z-10' : ''}`}
+                      >
+                        <div className="flex flex-col items-center justify-center text-center leading-none">
+                          <span className="text-[9px] font-black mb-0.5 tracking-tighter">{arrow}</span>
+                          <span className="w-full">{val === -1 ? '-' : val.toFixed(1)}</span>
+                        </div>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-  );
+    );
+  } catch (err) {
+    return <div className="p-8 themed-card rounded-3xl border text-red-500 font-mono text-xs overflow-auto h-[80vh]">
+      <h3 className="font-black uppercase mb-4">DP Grid Rendering Error</h3>
+      <pre>{err.stack}</pre>
+    </div>;
+  }
 };
 
 function App() {
