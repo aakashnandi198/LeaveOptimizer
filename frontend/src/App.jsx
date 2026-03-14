@@ -158,43 +158,44 @@ const DPGridView = ({ grid, dates, choices }) => {
 
   // Track the actual chosen path from the currently selected strategy
   const optimalPath = useMemo(() => {
-    const path = new Set();
-    if (!plannedStrategy || plannedStrategy.length === 0 || !dates) return path;
-    
-    // The path consists of (day_index, budget_remaining)
-    const dateToIndex = dates.reduce((acc, d, i) => { acc[d] = i; return acc; }, {});
-    
-    let currentBudget = B;
-    let currentDayIdx = 0;
-    
-    // Start at the beginning
-    path.add(`${currentDayIdx}-${currentBudget}`);
-
-    plannedStrategy.forEach(block => {
-      const startIdx = dateToIndex[block.start_date];
-      const endIdx = dateToIndex[block.end_date];
+    try {
+      const path = new Set();
+      if (!plannedStrategy || plannedStrategy.length === 0 || !dates) return path;
       
-      // All states from previous position to block start are "Stay"
-      for (let i = currentDayIdx; i <= startIdx; i++) {
+      const dateToIndex = dates.reduce((acc, d, i) => { acc[d] = i; return acc; }, {});
+      
+      let currentBudget = B;
+      let currentDayIdx = 0;
+      
+      path.add(`${currentDayIdx}-${currentBudget}`);
+
+      plannedStrategy.forEach(block => {
+        const startIdx = dateToIndex[block.start_date];
+        const endIdx = dateToIndex[block.end_date];
+        
+        if (startIdx === undefined || endIdx === undefined) return;
+
+        for (let i = currentDayIdx; i <= startIdx; i++) {
+          path.add(`${i}-${currentBudget}`);
+        }
+        
+        currentBudget -= block.leave_spent;
+        currentDayIdx = Math.min(endIdx + 1, dates.length);
+        
+        if (currentDayIdx < dates.length) {
+          path.add(`${currentDayIdx}-${currentBudget}`);
+        }
+      });
+
+      for (let i = currentDayIdx; i < dates.length; i++) {
         path.add(`${i}-${currentBudget}`);
       }
       
-      // After this block is taken
-      currentBudget -= block.leave_spent;
-      currentDayIdx = endIdx + 1;
-      
-      // State after the block
-      if (currentDayIdx < dates.length) {
-        path.add(`${currentDayIdx}-${currentBudget}`);
-      }
-    });
-
-    // Final stretch after last block
-    for (let i = currentDayIdx; i < dates.length; i++) {
-      path.add(`${i}-${currentBudget}`);
+      return path;
+    } catch (err) {
+      console.error("optimalPath Error:", err);
+      return new Set();
     }
-    
-    return path;
   }, [plannedStrategy, dates, B]);
 
   return (
