@@ -5,6 +5,7 @@ import requests
 from datetime import datetime, timedelta
 from typing import Optional, List
 import uvicorn
+import math
 
 app = FastAPI()
 
@@ -150,8 +151,12 @@ async def optimize_leaves(req: OptimizeRequest):
                             
                         length = actual_end - actual_start + 1
                         cost = workdays_found
-                        bridge_benefit = length - cost
-                        score = ((bridge_benefit + 1) ** req.numerator_power) / ((cost + 0.1) ** req.denominator_power)
+                        
+                        # Log-Additive Scoring: Balance efficiency with a subtle length bonus
+                        # Score = (Efficiency) + (Bias * log2(Length))
+                        efficiency_part = length / (cost + 1.0)
+                        length_bonus = req.numerator_power * math.log2(length)
+                        score = efficiency_part + length_bonus
                         
                         next_i = actual_end + 1
                         total_score = score + dp[next_i][b - cost]

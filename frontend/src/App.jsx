@@ -451,11 +451,20 @@ function App() {
                 <div className="bg-blue-900 dark:bg-blue-950 text-white p-4 rounded-2xl shadow-xl border border-blue-800 dark:border-blue-900">
                   <div className="font-mono text-center mb-3">
                     <div className="flex flex-col items-center">
-                      <div className="border-b border-blue-400 mb-0.5 px-4 text-sm font-black">L<sup>{numPower.toFixed(1)}</sup></div>
-                      <div className="text-sm font-black italic opacity-60">Cost</div>
+                      <div className="text-[10px] font-black flex items-center gap-2">
+                        <div className="flex flex-col items-center">
+                          <div className="border-b border-blue-400 px-2">Length</div>
+                          <div>Cost + 1</div>
+                        </div>
+                        <span className="text-blue-400">+</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-blue-300">{numPower.toFixed(1)}</span>
+                          <span className="text-[8px] opacity-60">× log₂(L)</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <p className="text-[8px] leading-relaxed opacity-50 text-center font-black uppercase tracking-widest">Score = Length / Cost</p>
+                  <p className="text-[7px] leading-relaxed opacity-50 text-center font-black uppercase tracking-widest">Score = Efficiency + Length Bonus</p>
                 </div>
               </div>
 

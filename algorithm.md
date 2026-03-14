@@ -36,13 +36,16 @@ To ensure high-value bridges, a **validity filter** is applied to every potentia
 
 ## 5. The Scoring Formula (Utility)
 
-The "value" of a valid block is determined by the following formula:
+The "value" of a valid block is determined by a **Log-Additive** formula that balances raw efficiency with a subtle bonus for longer breaks:
 
-$$Score = \frac{(\text{Length of Bridge})^{\text{Length Bias}}}{(\text{Paid Days Spent} + 0.1)}$$
+$$Score = \frac{L}{C + 1} + (P \times \log_2(L))$$
 
-- **Length of Bridge:** The total consecutive days off (including the weekends/holidays bridged).
-- **Paid Days Spent:** The actual cost to your leave budget.
-- **Length Bias ($L^P$):** A user-controlled power (default 1.0). Increasing this makes the algorithm aggressively favor longer, multi-week vacations over many short trips.
+- **$L$ (Length of Bridge):** The total consecutive days off (including the weekends/holidays bridged).
+- **$C$ (Paid Days Spent):** The actual cost to your leave budget.
+- **$P$ (Length Bias):** A user-controlled multiplier (default 1.0). 
+
+### Why Log-Additive?
+Unlike exponential scoring, this formula has **diminishing returns** for extremely long blocks. The logarithmic term ($\log_2$) ensures that adding more days to a block provides a helpful bonus but won't "explode" the score. This forces the algorithm to prioritize high-efficiency "Smart Bridges" (e.g., spending 1 day to get 4-5 days off) multiple times throughout the year, rather than dumping the entire budget into one massive, inefficient vacation.
 
 ## 6. Backward Induction
 
