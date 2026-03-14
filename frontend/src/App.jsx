@@ -268,7 +268,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [plannedStrategy, setPlannedStrategy] = useState([]);
   const [allStrategies, setAllStrategies] = useState([]);
-  const [selectedStrategyIndex, setSelectedStrategyIndex] = useState(0);
+  const [selectedStrategyIndex, setSelectedStrategyIndex] = useState(-1);
   const [dpGrid, setDpGrid] = useState(null);
   const [calDates, setCalDates] = useState([]);
   const [choices, setChoices] = useState(null);
@@ -368,11 +368,12 @@ function App() {
       });
       const strats = response.data.strategies || [];
       setAllStrategies(strats);
-      setSelectedStrategyIndex(0);
-      setPlannedStrategy(strats.length > 0 ? strats[0] : []);
       setDpGrid(response.data.dp_grid);
       setCalDates(response.data.calendar);
       setChoices(response.data.choices);
+      // Force index update to trigger useEffect even if it was 0
+      setSelectedStrategyIndex(-1); 
+      setTimeout(() => setSelectedStrategyIndex(0), 0);
     } catch (error) { console.error(error); } finally { setLoading(false); }
   };
 
