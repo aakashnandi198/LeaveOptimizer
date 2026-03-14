@@ -224,7 +224,7 @@ const DPGridView = ({ grid, dates, choices }) => {
                       className={`p-2 border dark:border-gray-700 text-center transition-colors duration-300 relative ${val === -1 ? 'text-gray-100 dark:text-gray-800' : ''} ${isOptimal ? 'ring-2 ring-yellow-400 ring-inset z-10' : ''}`}
                     >
                       <div className="flex flex-col items-center leading-none">
-                        <span className="text-[7px] font-black opacity-40 mb-0.5">{arrow}</span>
+                        <span className="text-[9px] font-black mb-0.5">{arrow}</span>
                         <span>{val === -1 ? '-' : val.toFixed(1)}</span>
                       </div>
                     </td>
