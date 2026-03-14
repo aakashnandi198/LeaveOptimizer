@@ -29,10 +29,24 @@ The **Leave Optimizer** is a tool designed to help you maximize your consecutive
 
 - **Python 3.8+**
 - **Node.js** (npm included)
+- **Docker & Docker Compose** (optional, for containerized launch)
 
 ---
 
-## Getting Started
+## Quick Start (Docker)
+
+Launch the entire application with one command:
+
+```bash
+docker-compose up --build
+```
+
+- **Frontend:** [http://localhost:5173](http://localhost:5173)
+- **Backend:** [http://localhost:8000](http://localhost:8000)
+
+---
+
+## Getting Started (Manual)
 
 ### 1. Backend Setup
 
